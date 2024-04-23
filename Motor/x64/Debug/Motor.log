@@ -1,0 +1,3 @@
+﻿  MainGame.cpp
+C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\Motor\MainGame.cpp(57,14): warning C4305: '+=': truncation from 'double' to 'float'
+  Motor.vcxproj -> C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\x64\Debug\Motor.exe
