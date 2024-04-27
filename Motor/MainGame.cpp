@@ -13,7 +13,7 @@ MainGame::MainGame()
 void MainGame::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window = SDL_CreateWindow("nombre_ventana_xd", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+	window = SDL_CreateWindow("Cuadraditos ", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
 	SDL_GLContext glContext = SDL_GL_CreateContext(window);
 	GLenum error = glewInit();
 	if (error != GLEW_OK) {
@@ -43,7 +43,12 @@ MainGame::~MainGame()
 void MainGame::run()
 {
 	init();
-	sprite.init(-1,-1,1,1);
+
+	sprite.init(0, 0, 1, 1);
+	sprite1.init(-1, 0, 1, 1);
+	sprite2.init(0, -1, 1, 1);
+	sprite3.init(-1, -1, 1, 1);
+
 	update();
 }
 
@@ -54,11 +59,27 @@ void MainGame::draw()
 	program.use();
 	GLuint timeLocation = program.getUniformLocation("time");  // que es una variable uniforme
 	glUniform1f(timeLocation, time); // da error no usar la variable uniform
-	time += 0.01;
-	sprite.draw();
-	program.unuse();
-	SDL_GL_SwapWindow(window);
+	time += 0.012;
+	
+	cont = 0;
 
+	sprite.draw();
+
+	if (time > ++cont) {
+		sprite1.draw();
+	}
+	if (time > ++cont) {
+		sprite2.draw();
+	}
+
+	if (time > ++cont) {
+		sprite3.draw();
+	}
+
+	program.unuse();
+	//sprites.at(0).draw();
+	SDL_GL_SwapWindow(window);
+	
 }
 
 void MainGame::update()
