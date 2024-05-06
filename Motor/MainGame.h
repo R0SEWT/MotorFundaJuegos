@@ -3,9 +3,11 @@
 #include<GL/eglew.h>
 #include <iostream>
 #include <vector>
+#include<cmath>
+#include<memory>
 #include "Sprite.h"
-
 #include"GLS_Program.h"
+#include "Window.h"
 
 using namespace std;
 
@@ -24,7 +26,7 @@ private:
 
 	int width;
 	int height;
-	SDL_Window* window;
+	Window* window;
 	void init();
 	void processInput();
 	void initShaders();
