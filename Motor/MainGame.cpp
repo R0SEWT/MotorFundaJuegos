@@ -1,5 +1,8 @@
 #include "MainGame.h"
 #include "Sprite.h"
+#include <ctime> 
+#include <cstdlib> 
+
 
 MainGame::MainGame()
 {
@@ -14,11 +17,10 @@ void MainGame::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	window = new Window();
-	window->create("Motor WD2M", width, height, 0);
+	window->create("Motoro", width, height, 0);
 	initShaders();
 
 }
-
 
 
 MainGame::~MainGame()
@@ -32,9 +34,9 @@ void MainGame::run()
 	init();
 
 	sprite.init(0, 0, 1, 1, "images/si.png");
-	//sprite1.init(-1, 0, 1, 1);
-	//sprite2.init(0, -1, 1, 1);
-	//sprite3.init(-1, -1, 1, 1);
+	sprite1.init(-1, 0, 1, 1, "images/bug.png");
+	sprite2.init(0, -1, 1, 1, "images/papitas.png");
+	sprite3.init(-1, -1, 1, 1, "images/mondongo.png");
 
 	update();
 }
@@ -46,21 +48,21 @@ void MainGame::draw()
 	program.use();
 	GLuint timeLocation = program.getUniformLocation("time");  // que es una variable uniforme
 	glUniform1f(timeLocation, time); // da error no usar la variable uniform
-	time += 0.312;
+	time += 0.012;
 	
 	cont = 0;
 
 	sprite.draw();
 
 	if (time > ++cont) {
-		//sprite1.draw();
+		sprite1.draw();
 	}
 	if (time > ++cont) {
-		//sprite2.draw();
+		sprite2.draw();
 	}
 
 	if (time > ++cont) {
-		//sprite3.draw();
+		sprite3.draw();
 	}
 
 	program.unuse();

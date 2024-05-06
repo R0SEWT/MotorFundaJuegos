@@ -1,19 +1,5 @@
-﻿  Camera2D.cpp
-  GLTexture.cpp
-  IOManager.cpp
-C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\Motor\IOManager.cpp(16,18): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\Motor\IOManager.cpp(20,27): warning C4244: '-=': conversion from 'std::streamoff' to 'int', possible loss of data
-  ImageLoader.cpp
-C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\Motor\ImageLoader.cpp(34,22): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\Motor\ImageLoader.cpp(35,21): warning C4244: '=': conversion from 'unsigned long' to 'float', possible loss of data
-  InputManager.cpp
-  Main.cpp
+﻿  Main.cpp
   MainGame.cpp
-C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\Motor\MainGame.cpp(49,15): warning C4305: '+=': truncation from 'double' to 'float'
-  ResourceManager.cpp
-  Sprite.cpp
-  TextureCache.cpp
-  Window.cpp
-  picoPNG.cpp
+C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\Motor\MainGame.cpp(51,15): warning C4305: '+=': truncation from 'double' to 'float'
   Generating Code...
   Motor.vcxproj -> C:\Users\rodyv\source\repos\V ciclo\FundamentosTeoriaJuegos\profecode\Motor\x64\Debug\Motor.exe

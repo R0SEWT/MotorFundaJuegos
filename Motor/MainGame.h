@@ -8,6 +8,7 @@
 #include "Sprite.h"
 #include"GLS_Program.h"
 #include "Window.h"
+#include <map>
 
 using namespace std;
 

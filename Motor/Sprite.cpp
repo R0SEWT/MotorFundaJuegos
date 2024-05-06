@@ -4,6 +4,7 @@
 #include<cstddef>
 #include<iostream>
 
+
 Sprite::~Sprite()
 {//vertex buffer id
 	if (vboID != 0) {
