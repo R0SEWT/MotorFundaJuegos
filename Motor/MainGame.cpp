@@ -102,6 +102,24 @@ void MainGame::initLevel() {
 	levels.push_back(new Level("Level/level1.txt"));
 	currentLevel = 0;
 	spriteBatch.init();
+	player = new Player();
+	player->init(10.0f, levels[currentLevel]->getPlayerPosition(),
+		&inputManager);
+	std::mt19937 ramdomEngie(time(nullptr));
+
+	std::uniform_int_distribution<int>randPosX(
+		1, levels[currentLevel]->getWidth() - 2
+	);
+	std::uniform_int_distribution<int>randPoxY(
+		1, levels[currentLevel]->getHeight() - 2
+	);
+	for (size_t i = 0; i < levels[currentLevel]->getNumHumans(); i++)
+	{
+		humans.push_back(new Human);
+		glm::vec2 pos(randPosX(ramdomEngie) * TILE_WIDTH,
+			randPoxY(ramdomEngie) * TILE_WIDTH);
+		humans.back()->init(1.0f, pos);
+	}
 }
 
 void MainGame::draw() {
@@ -116,13 +134,22 @@ void MainGame::draw() {
 	GLuint imageLocation = program.getUniformLocation("myImage");
 	glUniform1i(imageLocation, 0);
 	spriteBatch.begin();
+
 	levels[currentLevel]->draw();
+	player->draw(spriteBatch);
+	for (size_t i = 0; i < humans.size(); i++)
+	{
+		humans[i]->draw(spriteBatch);
+	}
+
 	spriteBatch.end();
 	spriteBatch.renderBatch();
 	drawHud();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	program.unuse();
 	window.swapWindow();
+
+	
 }
 
 void MainGame::drawHud()
@@ -138,7 +165,7 @@ void MainGame::run() {
 void MainGame::updateElements() {
 	
 	camera2D.update();
-	//camera2D.setPosition(player->getPosition());
+	camera2D.setPosition(player->getPosition());
 }
 
 void MainGame::update() {
@@ -146,7 +173,13 @@ void MainGame::update() {
 		draw();
 		processInput();
 		updateElements();
+		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
+		for (size_t i = 0; i < humans.size(); i++)
+		{
+			humans[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
+		}
 	}
+
 }
 
 void MainGame::reset() {
