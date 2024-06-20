@@ -17,6 +17,7 @@ void Zombie::init(float speed, glm::vec2 position)
 	this->speed = speed;
 	color.set(0, 200, 0, 255); // verde
 	this->position = position;
+	this->furia_duration = 0;
 
 	// obtner direccion aleatoria
 	
@@ -33,7 +34,27 @@ void Zombie::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 	std::mt19937 randomEngie(time(nullptr));
 	std::uniform_real_distribution<float>randRotate(-40.0f, 40.0f);
 	position += direction * speed;
-	if (collideWithLevel(levelData)) {
+
+	// si esta en furia
+	if (furia_duration > 0)
+	{
+		position += direction * speed * 3.0f;
+		furia_duration--;
+		if (furia_duration == 0)
+		{
+			color.set(0, 200, 0, 255); // color normal
+		}
+	}
+	else { // si no esta en furia
+		if (rand() % 1000 < 3)
+		{
+			furia_duration = 550;
+			color.set(1, 56, 9, 255); // verde oscuro 
+		}
+	}
+
+	
+	if (collideWithLevel(levelData) || rand() % 1000 < 8) {
 		direction = glm::rotate(direction, randRotate(randomEngie));
 	}
 }

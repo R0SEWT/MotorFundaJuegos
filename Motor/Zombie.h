@@ -6,6 +6,7 @@ class Zombie :
 private:
 	
     glm::vec2 direction;
+    int furia_duration;
 public:
     Zombie();
     ~Zombie();

@@ -124,7 +124,7 @@ void MainGame::initLevel() {
 	{
 		zombies.push_back(new Zombie);
 		glm::vec2 pos();
-		zombies.back()->init(5.0f, pos_z);
+		zombies.back()->init(2.0f, pos_z);
 	}
 
 }
