@@ -11,7 +11,7 @@ const float AGENT_RADIUS = AGENT_WIDTH / 2.0f;
 class Zombie;
 class Human;
 
-class Agent
+class Agent // agentes del juego
 {
 protected:
 	glm::vec2 position;

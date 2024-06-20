@@ -3,6 +3,9 @@
 class Zombie :
     public Agent
 {
+private:
+	
+    glm::vec2 direction;
 public:
     Zombie();
     ~Zombie();

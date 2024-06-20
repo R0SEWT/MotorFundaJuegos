@@ -118,8 +118,15 @@ void MainGame::initLevel() {
 		humans.push_back(new Human);
 		glm::vec2 pos(randPosX(ramdomEngie) * TILE_WIDTH,
 			randPoxY(ramdomEngie) * TILE_WIDTH);
-		humans.back()->init(1.0f, pos);
+		humans.back()->init(3.0f, pos);
 	}
+	for (auto pos_z : levels[currentLevel]->getZombiesPosition())
+	{
+		zombies.push_back(new Zombie);
+		glm::vec2 pos();
+		zombies.back()->init(5.0f, pos_z);
+	}
+
 }
 
 void MainGame::draw() {
@@ -140,6 +147,10 @@ void MainGame::draw() {
 	for (size_t i = 0; i < humans.size(); i++)
 	{
 		humans[i]->draw(spriteBatch);
+	}
+	for (auto z : zombies)
+	{
+		z->draw(spriteBatch);
 	}
 
 	spriteBatch.end();
@@ -177,6 +188,10 @@ void MainGame::update() {
 		for (size_t i = 0; i < humans.size(); i++)
 		{
 			humans[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
+		}
+		for (auto &z :zombies)
+		{
+			z->update(levels[currentLevel]->getLevelData(), humans, zombies);
 		}
 	}
 

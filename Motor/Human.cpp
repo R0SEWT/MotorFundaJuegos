@@ -18,7 +18,7 @@ void Human::init(float speed, glm::vec2 position)
 	this->position = position;
 
 	////////////////Comportamientos/////////////
-	// optner direccion
+	// obtner direccion
 	std::mt19937 randomEngine(time(nullptr));
 	std::uniform_real_distribution<float>randDir(-1.0f, 1.0f);
 	direction = glm::vec2(randDir(randomEngine), randDir(randomEngine));

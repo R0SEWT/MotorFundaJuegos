@@ -1,6 +1,7 @@
 #pragma once
 #include "Agent.h"
-class Human :
+
+class Human : 
     public Agent
 {
 private:
