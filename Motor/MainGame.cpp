@@ -185,13 +185,24 @@ void MainGame::update() {
 		processInput();
 		updateElements();
 		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
-		for (size_t i = 0; i < humans.size(); i++)
+		for (auto &h : humans)
 		{
-			humans[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
+			h->update(levels[currentLevel]->getLevelData(), humans, zombies);
 		}
-		for (auto &z :zombies)
+		for (size_t i = 0; i < zombies.size(); i++)
 		{
-			z->update(levels[currentLevel]->getLevelData(), humans, zombies);
+			zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
+			for (size_t j = 0; j < humans.size(); j++)
+			{
+				if (zombies[i]->collideWithAgent(humans[j])) {
+					zombies.push_back(new Zombie);
+					zombies.back()->init(2.0f, humans[j]->getPosition());
+					delete humans[j];
+					humans[j] = humans.back();
+					humans.pop_back();
+
+				}
+			}
 		}
 	}
 

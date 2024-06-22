@@ -2,7 +2,7 @@
 #include <random>
 #include <ctime>
 #include <glm/gtx/rotate_vector.hpp>
-
+#include "Human.h"
 
 
 Zombie::Zombie()
@@ -34,30 +34,29 @@ void Zombie::init(float speed, glm::vec2 position)
 
 void Zombie::update(vector<string>& levelData, vector<Human*>& humans, vector<Zombie*>& zombies)
 {
-	std::mt19937 randomEngie(time(nullptr));
-	std::uniform_real_distribution<float>randRotate(-40.0f, 40.0f);
-	
+	collideWithLevel(levelData);
+	Human* closeHuman = getNearestHuman(humans);
+	if (closeHuman != nullptr) {
+		glm::vec2 direction = glm::normalize(
+			closeHuman->getPosition() - position
+		);
+		position += direction * speed;
+	}
 
-	position += direction * speed;
+}
 
-	if (furia_duration <= 0)
+Human* Zombie::getNearestHuman(vector<Human*>& humans)
+{
+	Human* closeHuman = nullptr;
+	float smallestDistance = 888888.0f;
+	for (size_t i = 0; i < humans.size(); i++)
 	{
-		if (rand() % 1000 < 4) // 0.8% de enfurecerse por frame (cuando no tengan furia)
-		{
-			furia_duration = 550;
-			color.set(1, 56, 9, 255); // verde oscuro 
+		glm::vec2 dist = humans[i]->getPosition() - position;
+		float distance = glm::length(dist);
+		if (distance < smallestDistance) {
+			smallestDistance = distance;
+			closeHuman = humans[i];
 		}
 	}
-	else { 
-		position += direction * speed * 3.0f;
-		furia_duration--;
-		if (furia_duration == 0)
-		{
-			color.set(0, 200, 0, 255); // color normal
-		}
-	}
-
-	if (collideWithLevel(levelData) || rand() % 1000 < 64) { // 6.4% de desorientarse por frame
-		direction = glm::rotate(direction, randRotate(randomEngie));
-	}
+	return closeHuman;
 }
