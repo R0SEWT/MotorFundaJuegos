@@ -75,7 +75,12 @@ void MainGame::handleInput()
 }
 
 void MainGame::createBullet() {
-	
+	glm::vec2 pos = player->getPosition();
+	glm::vec2 direction = player->getDirection();
+	Bullet *bullet = new Bullet();
+	bullet->init(pos, direction, 5.0f);
+	bullets.push_back(bullet);
+	player->resetCDShot();
 }
 
 void MainGame::initShaders()
@@ -202,10 +207,8 @@ void MainGame::update() {
 		///////////////////////// PLAYER //////////////////////////
 		// Movimiento y disparos
 		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
-		if (player->getShot()) { // disparo con cooldown
-			bullets.push_back(new Bullet);
-			bullets.back()->init(player->getPosition(), player->getDirection(), 4.0f);
-			player->resetCDShot();
+		if (player->getShot()) { // SPACE + COLDOWN cumplido
+			createBullet();
 		}
 
 		///////////////////////// HUMANS //////////////////////////
@@ -232,8 +235,18 @@ void MainGame::update() {
 				}
 			}
 		}
+		////////////////////////// SPAWNS //////////////////////////
+		// Spawn de zombies con cooldown
+		for (auto& s : spawns) {
+			s->update();
+			s->checkSpawnZombie(zombies, 2.0f);
+		}
 		///////////////////////// BULLETS //////////////////////////
 		// Asesinatos y eliminacion de balas
+		
+		for (auto& b : bullets) {
+			b->update();
+		}
 		for (size_t i = 0; i < zombies.size(); i++)
 		{
 			for (size_t j = 0; j < bullets.size(); j++)
@@ -257,15 +270,7 @@ void MainGame::update() {
 				}
 			}
 		}
-		///////////////////////// BULLETS //////////////////////////
-		for (auto& s : spawns) {
-			s->update();
-			s->checkSpawnZombie(zombies, 2.0f);
-		}
-		///////////////////////// BULLETS //////////////////////////
-		for (auto& b : bullets) {
-			b->update();
-		}
+	
 	}
 
 }
