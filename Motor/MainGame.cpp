@@ -58,7 +58,7 @@ void MainGame::handleInput()
 
 
 	if (inputManager.isKeyDown(SDLK_q)) {
-		if (camera2D.getScale() < 3000.0f) {
+		if (camera2D.getScale() < 5000.0f) {
 			camera2D.setScale(camera2D.getScale() + SCALE_SPEED);
 		}
 	}
@@ -71,7 +71,7 @@ void MainGame::handleInput()
 	if (inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
 		//cout << "CLICK IZQUIERDO" << endl;
 
-		glm::vec2 coords = camera2D.convertToScreenWorld(inputManager.getMouseCoords());
+		glm::vec2 coords = camera2D.convertToScreenWorld(inputManager.getMouseCoords()); // coords relativas
 		glm::vec2 direction = glm::normalize(coords - player->getPosition());
 		createBullet(direction);
 
@@ -88,10 +88,10 @@ void MainGame::handleInput()
 
 void MainGame::createBullet(glm::vec2 direction) {
 	if(!player->shotReady()) return;
-	
+	player->infoCD();
 	// A mas amplitud de camara, mayor el coldown
 	player->updateShotColdown(camera2D.getScale());
-
+	player->resetCDShot();
 	glm::vec2 pos = player->getPosition();
 	Bullet *bullet = new Bullet();
 	bullet->init(pos, direction, 8.0f);
@@ -110,7 +110,7 @@ void MainGame::initShaders()
 
 void MainGame::init() {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	window.create("Mundo 1", width, height, 0);
+	window.create("Zoombies", width, height, 0);
 	GLenum error = glewInit();
 	if (error != GLEW_OK) {
 		fatalError("Glew not initialized");
@@ -128,11 +128,17 @@ void MainGame::initLevel(int currentLevel) {
 	levels.push_back(new Level("Level/level4.txt"));
 	levels.push_back(new Level("Level/level5.txt"));
 
+	// init player
 	player = new Player();
-	player->init(10.0f, levels[currentLevel]->getPlayerPosition(),
-		&inputManager, 1);
-	std::mt19937 ramdomEngie(time(nullptr));
+	float speed = 10.0f;
+	float shotColdown = 10.0f;
+	int lives = 3;
+	player->init(speed, levels[currentLevel]->getPlayerPosition(),
+		&inputManager, shotColdown, lives);
 
+	// init humans
+	speed = 3.0f;
+	std::mt19937 ramdomEngie(time(nullptr));
 	std::uniform_int_distribution<int>randPosX(
 		1, levels[currentLevel]->getWidth() - 2
 	);
@@ -144,22 +150,23 @@ void MainGame::initLevel(int currentLevel) {
 		humans.push_back(new Human);
 		glm::vec2 pos(randPosX(ramdomEngie) * TILE_WIDTH,
 			randPoxY(ramdomEngie) * TILE_WIDTH);
-		humans.back()->init(3.0f, pos);
+		humans.back()->init(speed, pos);
 	}
-	for (auto pos_z : levels[currentLevel]->getZombiesPosition())
+	
+	// init zombies
+	speed = 2.0f;
+	for (auto &pos_z : levels[currentLevel]->getZombiesPosition())
 	{
 		zombies.push_back(new Zombie);
-		glm::vec2 pos();
-		zombies.back()->init(2.0f, pos_z);
+		zombies.back()->init(speed, pos_z);
 	}
 
-	for (auto pos_s : levels[currentLevel]->getSpawnersPosition()) {
+	// init spawners
+	int time_generation = 150;
+	for (auto &pos_s : levels[currentLevel]->getSpawnersPosition()) {
 		spawns.push_back(new Spawner);
-		glm::vec2 pos();
-		spawns.back()->init(100, pos_s);
+		spawns.back()->init(time_generation, pos_s);
 	}
-
-
 }
 
 void MainGame::draw() {
@@ -204,7 +211,7 @@ void MainGame::draw() {
 
 void MainGame::drawHud()
 {
-	// agente que no se mueve
+
 
 }
 
@@ -219,85 +226,98 @@ void MainGame::updateElements() {
 	camera2D.setPosition(player->getPosition());
 }
 
+void MainGame::moveAndCollide() {
+	///////////////////////// PLAYER //////////////////////////
+	player->update(levels[currentLevel]->getLevelData(), humans, zombies);
+
+	///////////////////////// HUMANS //////////////////////////
+	// Movimiento y colisiones
+	for (auto& h : humans)
+	{
+		h->update(levels[currentLevel]->getLevelData(), humans, zombies);
+	}
+
+	///////////////////////// ZOMBIES //////////////////////////
+	//Movimiento e infecciones
+	for (size_t i = 0; i < zombies.size(); i++)
+	{
+		zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
+		for (size_t j = 0; j < humans.size(); j++)
+		{
+			if (zombies[i]->collideWithAgent(humans[j])) {
+				zombies.push_back(new Zombie);
+				zombies.back()->init(2.0f, humans[j]->getPosition());
+				delete humans[j];
+				humans[j] = humans.back();
+				humans.pop_back();
+
+			}
+		}
+	}
+	////////////////////////// SPAWNS //////////////////////////
+	// Spawn de zombies con cooldown
+	for (auto& s : spawns) {
+		s->update();
+		s->checkSpawnZombie(zombies, 2.0f);
+	}
+	///////////////////////// BULLETS //////////////////////////
+	// Asesinatos y eliminacion de balas
+
+	for (auto& b : bullets) {
+		b->update();
+	}
+	for (size_t i = 0; i < zombies.size(); i++) // mejorable con Spatial Partitioning
+	{
+		for (size_t j = 0; j < bullets.size(); j++)
+		{
+			// asesinato y eliminacion de bala
+			if (zombies[i]->collideWithAgent(bullets[j])) {
+
+				delete zombies[i];
+
+				zombies[i] = zombies.back();
+				zombies.pop_back();
+				delete bullets[j];
+				bullets[j] = bullets.back();
+				bullets.pop_back();
+				break;
+			}
+			// eliminacion de bala al chocar con pared
+			if (bullets[j]->iSForDestroy(levels[currentLevel]->getLevelData())) {
+				delete bullets[j];
+				bullets[j] = bullets.back();
+				bullets.pop_back();
+				break;
+			}
+		}
+	}
+}
+
 void MainGame::update() {
 	while (gameState != GameState::EXIT) {
 		draw();
 		processInput();
 		updateElements();
 
-		///////////////////////// PLAYER //////////////////////////
-		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
-
-		///////////////////////// HUMANS //////////////////////////
-		// Movimiento y colisiones
-		for (auto &h : humans)
-		{
-			h->update(levels[currentLevel]->getLevelData(), humans, zombies);
-		}
-
-		///////////////////////// ZOMBIES //////////////////////////
-		//Movimiento e infecciones
-		for (size_t i = 0; i < zombies.size(); i++)
-		{
-			zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
-			for (size_t j = 0; j < humans.size(); j++)
-			{
-				if (zombies[i]->collideWithAgent(humans[j])) {
-					zombies.push_back(new Zombie);
-					zombies.back()->init(2.0f, humans[j]->getPosition());
-					delete humans[j];
-					humans[j] = humans.back();
-					humans.pop_back();
-
-				}
-			}
-		}
-		////////////////////////// SPAWNS //////////////////////////
-		// Spawn de zombies con cooldown
-		for (auto& s : spawns) {
-			s->update();
-			s->checkSpawnZombie(zombies, 2.0f);
-		}
-		///////////////////////// BULLETS //////////////////////////
-		// Asesinatos y eliminacion de balas
+		moveAndCollide();// mejorable con Spatial Partitioning
 		
-		for (auto& b : bullets) {
-			b->update();
-		}
-		for (size_t i = 0; i < zombies.size(); i++)
-		{
-			for (size_t j = 0; j < bullets.size(); j++)
-			{
-				// asesinato y eliminacion de bala
-				if (zombies[i]->collideWithAgent(bullets[j])) {
-
-					delete zombies[i];
-
-					zombies[i] = zombies.back();
-					zombies.pop_back();
-					delete bullets[j];
-					bullets[j] = bullets.back();
-					bullets.pop_back();
-					break;
-				}
-				// eliminacion de bala al chocar con pared
-				if (bullets[j]->iSForDestroy(levels[currentLevel]->getLevelData())) {
-					delete bullets[j];
-					bullets[j] = bullets.back();
-					bullets.pop_back();
-				}
-			}
-		}
 		if (zombies.size() == 0) {
-			currentLevel++;
-			if (currentLevel >= levels.size()) {
-				gameState = GameState::EXIT;
-			}
-			else {
-				reset();
-				initLevel(currentLevel);
+			passLevel();
+		}
+		for (auto &z : zombies) 
+		{
+			if (z->collideWithAgent(player)) {
+				player->die();
+				resetLevel();
+				break;
 			}
 		}
+		if (player->getLives() == 0) {
+			reset();
+			cout<<"GAME OVER"<<endl;
+			gameState = GameState::EXIT;
+		}
+
 	}
 
 }
@@ -329,3 +349,22 @@ void MainGame::reset() {
 	spawns.clear();
 	bullets.clear();
 }
+
+void MainGame::passLevel() {
+	currentLevel++;
+	if (currentLevel == levels.size()) {
+		cout << "GANASTE" << endl;
+		gameState = GameState::EXIT;
+	}
+	else {
+		reset();
+		initLevel(currentLevel);
+	}
+}
+
+void MainGame::resetLevel()
+{
+	reset();
+	initLevel(currentLevel);
+}
+

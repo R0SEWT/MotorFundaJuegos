@@ -15,15 +15,15 @@ class Player :
 {
 private:
     InputManager* inputmanager;
-    int shotColdown;
+    float shotColdown;
     int currentShotColdown;
     int timeForShot;
-    bool shot;
     int direction;
+    int lives;
 public:
     Player();
     ~Player();
-    void init(float speed, glm::vec2 position, InputManager* inputManager, int shotColdown);
+    void init(float speed, glm::vec2 position, InputManager* inputManager, float shotColdown, int lives);
     void update(vector<string>& levelData,
         vector<Human*>& humans,
         vector<Zombie*>& zombies);
@@ -32,5 +32,8 @@ public:
     glm::vec2 getDirection();
 
     void updateShotColdown(float camScale);
+    void infoCD();
+    void die();
+    int getLives();
 };
 

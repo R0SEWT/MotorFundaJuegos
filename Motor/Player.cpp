@@ -12,7 +12,7 @@ Player::~Player()
 {
 }
 
-void Player::init(float speed, glm::vec2 position, InputManager* inputManager, int shotColdown)
+void Player::init(float speed, glm::vec2 position, InputManager* inputManager, float shotColdown, int lives)
 {
 	this->speed = speed;
 	this->position = position;
@@ -20,7 +20,7 @@ void Player::init(float speed, glm::vec2 position, InputManager* inputManager, i
 	this->shotColdown = shotColdown;
 	this->timeForShot = shotColdown;
 	this->currentShotColdown = shotColdown;
-	this->shot = false;
+	this->lives = lives;
 	direction = TOP;
 
 	color.set(20, 20, 200, 255);
@@ -48,6 +48,10 @@ void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 	}
 
 	collideWithLevel(levelData);
+	if (timeForShot > 0) {
+		timeForShot--;
+	}
+	
 }
 
 
@@ -71,13 +75,12 @@ glm::vec2 Player::getDirection() {
 
 void Player::resetCDShot() {
 	timeForShot = currentShotColdown;
-	shot = false;
 }
 
 
 void Player::updateShotColdown(float camScale) 
 {
-	if (camScale != 0) {
+	if (camScale > 0) {
 		currentShotColdown = shotColdown / camScale;
 	}
 	cout << currentShotColdown << endl;
@@ -85,9 +88,19 @@ void Player::updateShotColdown(float camScale)
 
 bool Player::shotReady() {
 	if (timeForShot <= 0) {
-		resetCDShot();
 		return true;
 	}
-	timeForShot--;
 	return false;
+}
+
+void Player::infoCD() {
+	cout << shotColdown << ":" << currentShotColdown << "/" << currentShotColdown - shotColdown << endl;
+}
+
+void Player::die() {
+	lives--;
+}
+
+int Player::getLives() {
+	return lives;
 }

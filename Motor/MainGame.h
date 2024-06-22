@@ -25,6 +25,7 @@ private:
 	int height;
 	SpriteBatch spriteBatch;
 	SpriteBatch hudBatch;
+	
 	vector<Level*> levels;
 	vector<Human*> humans;
 	vector<Zombie*> zombies;
@@ -46,6 +47,9 @@ private:
 	void handleInput();
 	void updateElements();
 	void createBullet(glm::vec2 direction);
+	void passLevel();
+	void resetLevel();
+	void moveAndCollide();
 public:
 	MainGame();
 	~MainGame();
