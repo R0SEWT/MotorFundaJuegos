@@ -1,6 +1,9 @@
 #include "Player.h"
 #include <SDL/SDL.h>
 
+#include <iostream>
+using namespace std;
+
 Player::Player()
 {
 }
@@ -16,6 +19,7 @@ void Player::init(float speed, glm::vec2 position, InputManager* inputManager, i
 	this->inputmanager = inputManager;
 	this->shotColdown = shotColdown;
 	this->timeForShot = shotColdown;
+	this->currentShotColdown = shotColdown;
 	this->shot = false;
 	direction = TOP;
 
@@ -42,6 +46,7 @@ void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 		position.x += speed;
 		direction = RIGHT;
 	}
+
 	if (inputmanager->isKeyDown(SDLK_SPACE) && timeForShot < 0) {
 		shot = true;
 	}
@@ -51,6 +56,7 @@ void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 
 	collideWithLevel(levelData);
 }
+
 
 glm::vec2 Player::getDirection() {
 	switch(direction) {
@@ -71,6 +77,15 @@ glm::vec2 Player::getDirection() {
 }
 
 void Player::resetCDShot() {
-	timeForShot = shotColdown;
+	timeForShot = currentShotColdown;
 	shot = false;
+}
+
+
+void Player::updateShotColdown(float camScale) 
+{
+	if (camScale != 0) {
+		currentShotColdown = shotColdown / camScale;
+	}
+	cout << currentShotColdown << endl;
 }

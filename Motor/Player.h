@@ -16,6 +16,7 @@ class Player :
 private:
     InputManager* inputmanager;
     int shotColdown;
+    int currentShotColdown;
     int timeForShot;
     bool shot;
     int direction;
@@ -29,5 +30,7 @@ public:
     bool getShot() { return shot; }
     void resetCDShot();
     glm::vec2 getDirection();
+
+    void updateShotColdown(float camScale);
 };
 

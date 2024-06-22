@@ -1,4 +1,5 @@
 #include "Camera2D.h"
+#include "SDL/SDL.h"
 
 Camera2D::Camera2D() : scale(1.0),
 screenWidth(500),
@@ -8,12 +9,14 @@ needsUpdateMatrix(true)
 {
 }
 
-void Camera2D::init(int screenWidth, int screenHeight)
+void Camera2D::init(int screenWidth, int screenHeight,InputManager* inputManager, float changeScale)
 {
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 	this->orthoMatrix = glm::ortho(0.0f,
 		(float)screenWidth, 0.0f, (float)screenHeight);
+	this->inputManager = inputManager;
+	this->changeScale = changeScale;
 }
 
 glm::vec2 Camera2D::convertToScreenWorld(glm::vec2 screenScords)
@@ -34,6 +37,12 @@ void Camera2D::update()
 		glm::vec3 scaleCamera(this->scale, this->scale, 0.0f);
 		cameraMatrix = glm::scale(glm::mat4(1.0f), scaleCamera)
 			* cameraMatrix;
+	}
+	if (inputManager->isKeyDown(SDLK_q)) {
+		setScale(scale + changeScale);
+	}
+	if (inputManager->isKeyDown(SDLK_e)) {
+		setScale(scale - changeScale);
 	}
 }
 

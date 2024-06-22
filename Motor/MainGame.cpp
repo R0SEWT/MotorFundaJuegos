@@ -10,7 +10,7 @@ MainGame::MainGame() {
 	width = 800;
 	height = 600;
 	gameState = GameState::PLAY;
-	camera2D.init(width, height);
+	camera2D.init(width, height, &inputManager, 0.01f);
 	//camera2D.setScale(4.0f);
 }
 
@@ -107,10 +107,11 @@ void MainGame::init() {
 void MainGame::initLevel() {
 	levels.push_back(new Level("Level/level1.txt"));
 	currentLevel = 0;
-	spriteBatch.init();
+	spriteBatch.init();	
+	
 	player = new Player();
 	player->init(10.0f, levels[currentLevel]->getPlayerPosition(),
-		&inputManager, 10);
+		&inputManager, 50);
 	std::mt19937 ramdomEngie(time(nullptr));
 
 	std::uniform_int_distribution<int>randPosX(
@@ -209,7 +210,10 @@ void MainGame::update() {
 		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
 		if (player->getShot()) { // SPACE + COLDOWN cumplido
 			createBullet();
+
 		}
+		// A mas amplitud de camara, mayor el coldown
+		player->updateShotColdown(pow(camera2D.getScale(), 2));
 
 		///////////////////////// HUMANS //////////////////////////
 		// Movimiento y colisiones
