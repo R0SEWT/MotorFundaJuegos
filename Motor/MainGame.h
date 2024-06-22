@@ -11,6 +11,7 @@
 #include "Human.h"
 #include "Zombie.h"
 #include "SpriteBatch.h"
+#include "Spawner.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -26,6 +27,7 @@ private:
 	vector<Level*> levels;
 	vector<Human*> humans;
 	vector<Zombie*> zombies;
+	vector<Spawner*> spawns;
 	Player* player;
 	double alphaReduce;
 	double alphaReduceTotal;

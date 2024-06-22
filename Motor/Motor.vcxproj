@@ -152,6 +152,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ScreenList.cpp" />
+    <ClCompile Include="Spawner.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteBatch.cpp" />
     <ClCompile Include="TextureCache.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ScreenIndices.h" />
     <ClInclude Include="ScreenList.h" />
+    <ClInclude Include="Spawner.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteBatch.h" />
     <ClInclude Include="TextureCache.h" />

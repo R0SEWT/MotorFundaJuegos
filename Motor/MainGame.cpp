@@ -127,6 +127,13 @@ void MainGame::initLevel() {
 		zombies.back()->init(2.0f, pos_z);
 	}
 
+	for (auto pos_s : levels[currentLevel]->getSpawnersPosition()) {
+		spawns.push_back(new Spawner);
+		glm::vec2 pos();
+		spawns.back()->init(100, pos_s);
+	}
+
+
 }
 
 void MainGame::draw() {
@@ -148,9 +155,13 @@ void MainGame::draw() {
 	{
 		humans[i]->draw(spriteBatch);
 	}
-	for (auto z : zombies)
+	for (auto &z : zombies)
 	{
 		z->draw(spriteBatch);
+	}
+	for (auto &s : spawns) {
+		s->draw(spriteBatch);
+		s->checkSpawnZombie(zombies, 2.0f);
 	}
 
 	spriteBatch.end();
@@ -203,6 +214,9 @@ void MainGame::update() {
 
 				}
 			}
+		}
+		for (auto& s : spawns) {
+			s->update();
 		}
 	}
 
