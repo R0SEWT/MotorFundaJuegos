@@ -11,6 +11,7 @@ MainGame::MainGame() {
 	height = 600;
 	gameState = GameState::PLAY;
 	camera2D.init(width, height);
+	//camera2D.setScale(4.0f);
 }
 
 MainGame::~MainGame() {
@@ -161,7 +162,6 @@ void MainGame::draw() {
 	}
 	for (auto &s : spawns) {
 		s->draw(spriteBatch);
-		s->checkSpawnZombie(zombies, 2.0f);
 	}
 	for (auto& b : bullets) {
 		b->draw(spriteBatch);
@@ -198,18 +198,25 @@ void MainGame::update() {
 		draw();
 		processInput();
 		updateElements();
-		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
 
+		///////////////////////// PLAYER //////////////////////////
+		// Movimiento y disparos
+		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
 		if (player->getShot()) { // disparo con cooldown
 			bullets.push_back(new Bullet);
 			bullets.back()->init(player->getPosition(), player->getDirection(), 4.0f);
 			player->resetCDShot();
 		}
 
+		///////////////////////// HUMANS //////////////////////////
+		// Movimiento y colisiones
 		for (auto &h : humans)
 		{
 			h->update(levels[currentLevel]->getLevelData(), humans, zombies);
 		}
+
+		///////////////////////// ZOMBIES //////////////////////////
+		//Movimiento e infecciones
 		for (size_t i = 0; i < zombies.size(); i++)
 		{
 			zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
@@ -224,35 +231,45 @@ void MainGame::update() {
 
 				}
 			}
+		}
+		///////////////////////// BULLETS //////////////////////////
+		// Asesinatos y eliminacion de balas
+		for (size_t i = 0; i < zombies.size(); i++)
+		{
 			for (size_t j = 0; j < bullets.size(); j++)
 			{
-				if (zombies[i]->collideWithAgent(bullets[j])) { // fixear eliiminaciones
+				// asesinato y eliminacion de bala
+				if (zombies[i]->collideWithAgent(bullets[j])) {
+
 					delete zombies[i];
 					zombies[i] = zombies.back();
 					zombies.pop_back();
-
 					delete bullets[j];
 					bullets[j] = bullets.back();
 					bullets.pop_back();
 					break;
 				}
-				if (bullets[j]->iSForDestroy(levels[currentLevel]->getLevelData())){
+				// eliminacion de bala al chocar con pared
+				if (bullets[j]->iSForDestroy(levels[currentLevel]->getLevelData())) {
 					delete bullets[j];
 					bullets[j] = bullets.back();
 					bullets.pop_back();
 				}
-			}	
+			}
 		}
+		///////////////////////// BULLETS //////////////////////////
 		for (auto& s : spawns) {
 			s->update();
+			s->checkSpawnZombie(zombies, 2.0f);
 		}
+		///////////////////////// BULLETS //////////////////////////
 		for (auto& b : bullets) {
 			b->update();
 		}
 	}
 
 }
-
+// Reiniciar el juego al perder
 void MainGame::reset() {
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 	for (size_t i = 0; i < zombies.size(); i++)
