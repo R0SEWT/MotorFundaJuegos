@@ -202,7 +202,7 @@ void MainGame::update() {
 
 		if (player->getShot()) { // disparo con cooldown
 			bullets.push_back(new Bullet);
-			bullets.back()->init(player->getPosition(), player->getDirection(), 2.0f);
+			bullets.back()->init(player->getPosition(), player->getDirection(), 4.0f);
 			player->resetCDShot();
 		}
 
@@ -236,13 +236,18 @@ void MainGame::update() {
 					bullets.pop_back();
 					break;
 				}
+				if (bullets[j]->iSForDestroy(levels[currentLevel]->getLevelData())){
+					delete bullets[j];
+					bullets[j] = bullets.back();
+					bullets.pop_back();
+				}
 			}	
 		}
 		for (auto& s : spawns) {
 			s->update();
 		}
 		for (auto& b : bullets) {
-			b->update(levels[currentLevel]->getLevelData());
+			b->update();
 		}
 	}
 
@@ -254,13 +259,25 @@ void MainGame::reset() {
 	{
 		delete zombies[i];
 	}
-	zombies.clear();
+	
 	for (size_t i = 0; i < humans.size(); i++)
 	{
 		delete humans[i];
 	}
-	humans.clear();
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		delete bullets[i];
+	}
+	for (size_t i = 0; i < spawns.size(); i++)
+	{
+		delete spawns[i];
+	}
+
 	delete player;
+	zombies.clear();
+	humans.clear();
 	levels.clear();
+	spawns.clear();
+	bullets.clear();
 	currentLevel = 0;
 }

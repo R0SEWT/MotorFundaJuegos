@@ -17,9 +17,19 @@ void Bullet::init(glm::vec2 position, glm::vec2 direction, float speed)
 
 }
 
-void Bullet::update(vector<string>& levelData)
+void Bullet::update()
 {
 	position += direction * speed;
-	collideWithLevel(levelData);
-
 }
+
+bool Bullet::iSForDestroy(vector<string>& levelData)
+{
+	if (collideWithLevel(levelData))
+	{
+		return true;
+	}
+	return false;
+}
+
+
+
