@@ -47,13 +47,6 @@ void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 		direction = RIGHT;
 	}
 
-	if (inputmanager->isKeyDown(SDLK_SPACE) && timeForShot < 0) {
-		shot = true;
-	}
-	else{
-		timeForShot--;
-	}
-
 	collideWithLevel(levelData);
 }
 
@@ -88,4 +81,13 @@ void Player::updateShotColdown(float camScale)
 		currentShotColdown = shotColdown / camScale;
 	}
 	cout << currentShotColdown << endl;
+}
+
+bool Player::shotReady() {
+	if (timeForShot <= 0) {
+		resetCDShot();
+		return true;
+	}
+	timeForShot--;
+	return false;
 }

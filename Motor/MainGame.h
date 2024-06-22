@@ -40,12 +40,12 @@ private:
 	Camera2D camera2D;
 	InputManager inputManager;
 	void init();
-	void initLevel();
+	void initLevel(int currentLevel);
 	void processInput();
 	void initShaders();
 	void handleInput();
 	void updateElements();
-	void createBullet();
+	void createBullet(glm::vec2 direction);
 public:
 	MainGame();
 	~MainGame();

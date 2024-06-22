@@ -27,7 +27,7 @@ public:
     void update(vector<string>& levelData,
         vector<Human*>& humans,
         vector<Zombie*>& zombies);
-    bool getShot() { return shot; }
+    bool shotReady();
     void resetCDShot();
     glm::vec2 getDirection();
 

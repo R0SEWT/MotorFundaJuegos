@@ -32,4 +32,3 @@ bool Bullet::iSForDestroy(vector<string>& levelData)
 }
 
 
-

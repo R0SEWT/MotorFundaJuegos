@@ -10,8 +10,7 @@ MainGame::MainGame() {
 	width = 800;
 	height = 600;
 	gameState = GameState::PLAY;
-	camera2D.init(width, height, &inputManager, 0.01f);
-	//camera2D.setScale(4.0f);
+	camera2D.init(width, height);
 }
 
 MainGame::~MainGame() {
@@ -45,6 +44,9 @@ void MainGame::processInput() {
 			inputManager.releaseKey(event.button.button);
 			break;
 		}
+		if (event.type == SDL_MOUSEMOTION) {
+			inputManager.setMouseCoords(event.motion.x, event.motion.y);
+		}
 		handleInput();
 	}
 
@@ -52,17 +54,27 @@ void MainGame::processInput() {
 
 void MainGame::handleInput()
 {
-	const float SCALE_SPEED = 0.1f;
-	if (inputManager.isKeyPressed(SDLK_q)) {
-		camera2D.setScale(camera2D.getScale() + SCALE_SPEED);
+	const float SCALE_SPEED = 0.01f;
+
+
+	if (inputManager.isKeyDown(SDLK_q)) {
+		if (camera2D.getScale() < 3000.0f) {
+			camera2D.setScale(camera2D.getScale() + SCALE_SPEED);
+		}
 	}
 
-	if (inputManager.isKeyPressed(SDLK_e)) {
-		camera2D.setScale(camera2D.getScale() - SCALE_SPEED);
+	if (inputManager.isKeyDown(SDLK_e)) {
+		if (camera2D.getScale() > 0.6f) {
+			camera2D.setScale(camera2D.getScale() - SCALE_SPEED);
+		}
 	}
-	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
+	if (inputManager.isKeyDown(SDL_BUTTON_LEFT)) {
 		//cout << "CLICK IZQUIERDO" << endl;
-		createBullet();
+
+		glm::vec2 coords = camera2D.convertToScreenWorld(inputManager.getMouseCoords());
+		glm::vec2 direction = glm::normalize(coords - player->getPosition());
+		createBullet(direction);
+
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_RIGHT)) {
@@ -74,13 +86,17 @@ void MainGame::handleInput()
 	}
 }
 
-void MainGame::createBullet() {
+void MainGame::createBullet(glm::vec2 direction) {
+	if(!player->shotReady()) return;
+	
+	// A mas amplitud de camara, mayor el coldown
+	player->updateShotColdown(camera2D.getScale());
+
 	glm::vec2 pos = player->getPosition();
-	glm::vec2 direction = player->getDirection();
 	Bullet *bullet = new Bullet();
-	bullet->init(pos, direction, 5.0f);
+	bullet->init(pos, direction, 8.0f);
 	bullets.push_back(bullet);
-	player->resetCDShot();
+	
 }
 
 void MainGame::initShaders()
@@ -100,18 +116,21 @@ void MainGame::init() {
 		fatalError("Glew not initialized");
 	}
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
-	initLevel();
+	initLevel(0);
 	initShaders();
 }
 
-void MainGame::initLevel() {
-	levels.push_back(new Level("Level/level1.txt"));
-	currentLevel = 0;
+void MainGame::initLevel(int currentLevel) {
 	spriteBatch.init();	
-	
+	levels.push_back(new Level("Level/level1.txt"));
+	levels.push_back(new Level("Level/level2.txt"));
+	levels.push_back(new Level("Level/level3.txt"));
+	levels.push_back(new Level("Level/level4.txt"));
+	levels.push_back(new Level("Level/level5.txt"));
+
 	player = new Player();
 	player->init(10.0f, levels[currentLevel]->getPlayerPosition(),
-		&inputManager, 50);
+		&inputManager, 1);
 	std::mt19937 ramdomEngie(time(nullptr));
 
 	std::uniform_int_distribution<int>randPosX(
@@ -185,7 +204,8 @@ void MainGame::draw() {
 
 void MainGame::drawHud()
 {
-	
+	// agente que no se mueve
+
 }
 
 void MainGame::run() {
@@ -206,14 +226,7 @@ void MainGame::update() {
 		updateElements();
 
 		///////////////////////// PLAYER //////////////////////////
-		// Movimiento y disparos
 		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
-		if (player->getShot()) { // SPACE + COLDOWN cumplido
-			createBullet();
-
-		}
-		// A mas amplitud de camara, mayor el coldown
-		player->updateShotColdown(pow(camera2D.getScale(), 2));
 
 		///////////////////////// HUMANS //////////////////////////
 		// Movimiento y colisiones
@@ -259,6 +272,7 @@ void MainGame::update() {
 				if (zombies[i]->collideWithAgent(bullets[j])) {
 
 					delete zombies[i];
+
 					zombies[i] = zombies.back();
 					zombies.pop_back();
 					delete bullets[j];
@@ -274,7 +288,16 @@ void MainGame::update() {
 				}
 			}
 		}
-	
+		if (zombies.size() == 0) {
+			currentLevel++;
+			if (currentLevel >= levels.size()) {
+				gameState = GameState::EXIT;
+			}
+			else {
+				reset();
+				initLevel(currentLevel);
+			}
+		}
 	}
 
 }
@@ -305,5 +328,4 @@ void MainGame::reset() {
 	levels.clear();
 	spawns.clear();
 	bullets.clear();
-	currentLevel = 0;
 }
