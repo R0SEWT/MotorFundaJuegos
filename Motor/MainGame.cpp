@@ -104,7 +104,7 @@ void MainGame::initLevel() {
 	spriteBatch.init();
 	player = new Player();
 	player->init(10.0f, levels[currentLevel]->getPlayerPosition(),
-		&inputManager);
+		&inputManager, 10);
 	std::mt19937 ramdomEngie(time(nullptr));
 
 	std::uniform_int_distribution<int>randPosX(
@@ -163,6 +163,9 @@ void MainGame::draw() {
 		s->draw(spriteBatch);
 		s->checkSpawnZombie(zombies, 2.0f);
 	}
+	for (auto& b : bullets) {
+		b->draw(spriteBatch);
+	}
 
 	spriteBatch.end();
 	spriteBatch.renderBatch();
@@ -196,6 +199,13 @@ void MainGame::update() {
 		processInput();
 		updateElements();
 		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
+
+		if (player->getShot()) { // disparo con cooldown
+			bullets.push_back(new Bullet);
+			bullets.back()->init(player->getPosition(), player->getDirection(), 2.0f);
+			player->resetCDShot();
+		}
+
 		for (auto &h : humans)
 		{
 			h->update(levels[currentLevel]->getLevelData(), humans, zombies);
@@ -214,9 +224,25 @@ void MainGame::update() {
 
 				}
 			}
+			for (size_t j = 0; j < bullets.size(); j++)
+			{
+				if (zombies[i]->collideWithAgent(bullets[j])) { // fixear eliiminaciones
+					delete zombies[i];
+					zombies[i] = zombies.back();
+					zombies.pop_back();
+
+					delete bullets[j];
+					bullets[j] = bullets.back();
+					bullets.pop_back();
+					break;
+				}
+			}	
 		}
 		for (auto& s : spawns) {
 			s->update();
+		}
+		for (auto& b : bullets) {
+			b->update(levels[currentLevel]->getLevelData());
 		}
 	}
 

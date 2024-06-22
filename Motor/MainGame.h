@@ -12,6 +12,7 @@
 #include "Zombie.h"
 #include "SpriteBatch.h"
 #include "Spawner.h"
+#include "Bullet.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -28,6 +29,7 @@ private:
 	vector<Human*> humans;
 	vector<Zombie*> zombies;
 	vector<Spawner*> spawns;
+	vector<Bullet*> bullets;
 	Player* player;
 	double alphaReduce;
 	double alphaReduceTotal;
