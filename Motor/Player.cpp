@@ -12,7 +12,7 @@ Player::~Player()
 {
 }
 
-void Player::init(float speed, glm::vec2 position, InputManager* inputManager, float shotColdown, int lives)
+void Player::init(float speed, glm::vec2 position, InputManager* inputManager, float shotColdown)
 {
 	this->speed = speed;
 	this->position = position;
@@ -20,7 +20,6 @@ void Player::init(float speed, glm::vec2 position, InputManager* inputManager, f
 	this->shotColdown = shotColdown;
 	this->timeForShot = shotColdown;
 	this->currentShotColdown = shotColdown;
-	this->lives = lives;
 	direction = TOP;
 
 	color.set(20, 20, 200, 255);
@@ -95,12 +94,4 @@ bool Player::shotReady() {
 
 void Player::infoCD() {
 	cout << shotColdown << ":" << currentShotColdown << "/" << currentShotColdown - shotColdown << endl;
-}
-
-void Player::die() {
-	lives--;
-}
-
-int Player::getLives() {
-	return lives;
 }

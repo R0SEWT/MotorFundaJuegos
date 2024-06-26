@@ -4,6 +4,12 @@
 void SpriteBatch::init()
 {
 	createVertexArray();
+
+	// Habilitar mezcla de colores(blending)
+	glEnable(GL_BLEND);
+	//Mezclar el color del pixel alpha(transparencia) al que esta en el buffer de la pantalla
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 }
 
 void SpriteBatch::createVertexArray()

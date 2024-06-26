@@ -11,6 +11,7 @@ MainGame::MainGame() {
 	height = 600;
 	gameState = GameState::PLAY;
 	camera2D.init(width, height);
+	lives = 3;
 }
 
 MainGame::~MainGame() {
@@ -115,13 +116,13 @@ void MainGame::init() {
 	if (error != GLEW_OK) {
 		fatalError("Glew not initialized");
 	}
-	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
-	initLevel(0);
+	glClearColor(0.529f, 0.808f, 0.922f, 1.0f); // RGB para color celeste claro
+	initLevel(0, 0);
 	initShaders();
 }
 
-void MainGame::initLevel(int currentLevel) {
-	spriteBatch.init();	
+void MainGame::initLevel(int currentLevel, bool resetPlayer) {
+	spriteBatch.init();
 	levels.push_back(new Level("Level/level1.txt"));
 	levels.push_back(new Level("Level/level2.txt"));
 	levels.push_back(new Level("Level/level3.txt"));
@@ -132,10 +133,9 @@ void MainGame::initLevel(int currentLevel) {
 	player = new Player();
 	float speed = 10.0f;
 	float shotColdown = 10.0f;
-	int lives = 3;
 	player->init(speed, levels[currentLevel]->getPlayerPosition(),
-		&inputManager, shotColdown, lives);
-
+		&inputManager, shotColdown);
+	
 	// init humans
 	speed = 3.0f;
 	std::mt19937 ramdomEngie(time(nullptr));
@@ -183,21 +183,21 @@ void MainGame::draw() {
 	spriteBatch.begin();
 
 	levels[currentLevel]->draw();
-	player->draw(spriteBatch);
 	for (size_t i = 0; i < humans.size(); i++)
 	{
-		humans[i]->draw(spriteBatch);
+		humans[i]->draw();
 	}
 	for (auto &z : zombies)
 	{
-		z->draw(spriteBatch);
+		z->draw();
 	}
 	for (auto &s : spawns) {
-		s->draw(spriteBatch);
+		s->draw();
 	}
 	for (auto& b : bullets) {
-		b->draw(spriteBatch);
+		b->draw();
 	}
+	player->draw();
 
 	spriteBatch.end();
 	spriteBatch.renderBatch();
@@ -293,6 +293,17 @@ void MainGame::moveAndCollide() {
 	}
 }
 
+int MainGame::getlives()
+{
+	return lives;
+}
+
+void MainGame::DecreaseLives()
+{
+	lives--;
+}
+
+
 void MainGame::update() {
 	while (gameState != GameState::EXIT) {
 		draw();
@@ -300,22 +311,26 @@ void MainGame::update() {
 		updateElements();
 
 		moveAndCollide();// mejorable con Spatial Partitioning
-		
 		if (zombies.size() == 0) {
 			passLevel();
 		}
 		for (auto &z : zombies) 
 		{
 			if (z->collideWithAgent(player)) {
-				player->die();
+				//player->die();
+				DecreaseLives();
+				cout << "You died\n";
+				cout << getlives() << endl;
+
+				//cout << player->getLives() << endl;
 				resetLevel();
 				break;
 			}
 		}
-		if (player->getLives() == 0) {
+		if (getlives() == 0) {
 			reset();
-			cout<<"GAME OVER"<<endl;
 			gameState = GameState::EXIT;
+			cout<<"GAME OVER"<<endl;
 		}
 
 	}
@@ -323,7 +338,8 @@ void MainGame::update() {
 }
 // Reiniciar el juego al perder
 void MainGame::reset() {
-	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
+
+	glClearColor(0.529f, 0.808f, 0.922f, 1.0f); // RGB para color celeste claro
 	for (size_t i = 0; i < zombies.size(); i++)
 	{
 		delete zombies[i];
@@ -358,13 +374,13 @@ void MainGame::passLevel() {
 	}
 	else {
 		reset();
-		initLevel(currentLevel);
+		initLevel(currentLevel, false);
 	}
 }
 
 void MainGame::resetLevel()
 {
 	reset();
-	initLevel(currentLevel);
+	initLevel(currentLevel, false);
 }
 

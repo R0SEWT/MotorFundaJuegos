@@ -17,8 +17,16 @@ Zombie::~Zombie()
 void Zombie::init(float speed, glm::vec2 position)
 {
 	srand(time(NULL));
+
+	//areatolizar primer frame
+	currentFrame = rand() % 4;
+
+	//valor por defecto
+	valDirection = 1;
+	animationSpeed = 0;
+
 	this->speed = speed;
-	color.set(0, 200, 0, 255); // verde
+	color.set(255, 255, 255, 255);
 	this->position = position;
 	this->furia_duration = 0;
 
@@ -41,7 +49,24 @@ void Zombie::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 			closeHuman->getPosition() - position
 		);
 		position += direction * speed;
+
+		//cambiar validor de dirección para el Sprite (Mirar izquierda o derecha)
+		if ((direction.x * speed) < 0) {
+			valDirection = -1;
+		}
+		if ((direction.x * speed) >= 0) {
+			valDirection = 1;
+		}
+
 	}
+	//Reduccion de tiempo entre frames del sprite
+	animationSpeed++;
+	if (animationSpeed == 8) {
+		currentFrame = (currentFrame + 1) % 4;
+		animationSpeed = 0;
+	}
+
+
 
 }
 
@@ -59,4 +84,21 @@ Human* Zombie::getNearestHuman(vector<Human*>& humans)
 		}
 	}
 	return closeHuman;
+}
+
+void Zombie::draw()
+{
+	spritebatch.init();
+	spritebatch.begin();
+
+
+	// Calcular uvRect para la animación
+	glm::vec4 uvRect(currentFrame * (1.0f / 4), 0.0f, valDirection * (1.0f / 4), 1.0f);
+	// Calcular uvRect de la posicion
+	glm::vec4 destRect(position.x, position.y, (AGENT_WIDTH) * 1.3, AGENT_WIDTH * 1.2);
+	spritebatch.draw(destRect, uvRect, ResourceManager::getTexture("Images/zombie.png").id, 0.0f, color);
+	spritebatch.end();
+	spritebatch.renderBatch();
+
+
 }

@@ -11,7 +11,7 @@ enum direction {
 };
 
 class Player :
-    public Human
+    public Agent
 {
 private:
     InputManager* inputmanager;
@@ -19,11 +19,10 @@ private:
     int currentShotColdown;
     int timeForShot;
     int direction;
-    int lives;
 public:
     Player();
     ~Player();
-    void init(float speed, glm::vec2 position, InputManager* inputManager, float shotColdown, int lives);
+    void init(float speed, glm::vec2 position, InputManager* inputManager, float shotColdown);
     void update(vector<string>& levelData,
         vector<Human*>& humans,
         vector<Zombie*>& zombies);
@@ -33,7 +32,6 @@ public:
 
     void updateShotColdown(float camScale);
     void infoCD();
-    void die();
-    int getLives();
+
 };
 

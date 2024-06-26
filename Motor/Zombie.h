@@ -15,5 +15,10 @@ public:
         vector<Human*>& humans,
         vector<Zombie*>& zombies);
     Human* getNearestHuman(vector<Human*>& humans);
+
+
+    //sobrescribir funcion draw
+
+    virtual void draw() override;
 };
 

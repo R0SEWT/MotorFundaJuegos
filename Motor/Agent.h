@@ -3,6 +3,10 @@
 #include "SpriteBatch.h"
 #include "GLTexture.h"
 #include <string>
+
+//Definir distintos sprites para hijos de Agent
+#include "ResourceManager.h"
+
 using namespace std;
 
 const float AGENT_WIDTH = 60.0f;
@@ -14,6 +18,10 @@ class Human;
 class Agent // agentes del juego
 {
 protected:
+	//variables para la animación del sprite
+	int currentFrame, valDirection, animationSpeed;
+	SpriteBatch spritebatch;
+
 	glm::vec2 position;
 	float speed;
 	Color color;
@@ -26,7 +34,10 @@ public:
 	virtual void update(vector<string>& levelData,
 		vector<Human*>& humans,
 		vector<Zombie*>& zombies);
-	void draw(SpriteBatch& spritebatch);
+
+	//declarar funcion draw como virtual (cambia en cada hijo)
+	virtual void draw();
+	
 	bool collideWithLevel(const vector<string>levelData);
 	virtual ~Agent();
 	bool collideWithAgent(Agent* agent);

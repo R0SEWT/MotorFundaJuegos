@@ -23,6 +23,7 @@ class MainGame
 private:
 	int width;
 	int height;
+	int lives;
 	SpriteBatch spriteBatch;
 	SpriteBatch hudBatch;
 	
@@ -40,8 +41,9 @@ private:
 	Sprite sprite;
 	Camera2D camera2D;
 	InputManager inputManager;
+
 	void init();
-	void initLevel(int currentLevel);
+	void initLevel(int currentLevel, bool resetPlayer = false);
 	void processInput();
 	void initShaders();
 	void handleInput();
@@ -50,6 +52,8 @@ private:
 	void passLevel();
 	void resetLevel();
 	void moveAndCollide();
+	int getlives();
+	void DecreaseLives();
 public:
 	MainGame();
 	~MainGame();
@@ -60,5 +64,6 @@ public:
 	void drawHud();
 	void update();
 	void reset();
+
 };
 

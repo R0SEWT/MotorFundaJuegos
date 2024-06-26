@@ -14,5 +14,8 @@ public:
         vector<Human*>& humans,
         vector<Zombie*>& zombies);
 
+    //funcionm para sobrescrivir draw
+    virtual void draw() override;
+
 };
 

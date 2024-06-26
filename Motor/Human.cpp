@@ -14,8 +14,14 @@ Human::~Human()
 void Human::init(float speed, glm::vec2 position)
 {
 	this->speed = speed;
-	color.set(185, 0, 0, 255); 
+	color.set(255, 255, 255, 255); 
 	this->position = position;
+
+	//Aletorizar primer frame del sprite e inicilizar variables
+	srand(time(NULL));
+	currentFrame = rand() % 4;
+	valDirection = 1;
+	animationSpeed = 0;
 
 	////////////////Comportamientos/////////////
 	// obtner direccion
@@ -37,4 +43,35 @@ void Human::update(vector<string>& levelData, vector<Human*>& humans, vector<Zom
 	if (collideWithLevel(levelData)) {
 		direction = glm::rotate(direction, randRotate(randomEngie));
 	}
+	//Condicional si el movimiento es negativo(a la izquierda) cambiar direccion vertical del frame
+	if (direction.x * speed < 0) {
+		valDirection = -1;
+	}
+	//Condicional si el movimiento es positivo(a la derecha) cambiar direccion vertical del frame
+
+	if (direction.x * speed >= 0) {
+		valDirection = 1;
+	}
+
+	//reducir tiempo del frame de animacion
+	animationSpeed++;
+	if (animationSpeed == 8) {
+		currentFrame = (currentFrame + 1) % 4;
+		animationSpeed = 0;
+	}
+
+}
+
+void Human::draw()
+{
+
+	spritebatch.init();
+	spritebatch.begin();
+	//crear uvRect para rectangulo del frame de la imagen a dibujar
+	glm::vec4 uvRect(currentFrame * (1.0f / 4), 0.0f, valDirection * (1.0f / 4), 1.0f);
+	//crear destRect para posición del dibujo
+	glm::vec4 destRect(position.x, position.y, AGENT_WIDTH * 0.9, AGENT_WIDTH * 0.8);
+	spritebatch.draw(destRect, uvRect, ResourceManager::getTexture("Images/human.png").id, 0.0f, color);
+	spritebatch.end();
+	spritebatch.renderBatch();
 }
