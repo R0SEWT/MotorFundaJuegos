@@ -11,6 +11,7 @@ public:
     Bullet();
     ~Bullet();
     void init(glm::vec2 position, glm::vec2 direction, float speed);
+    void draw();
     void update();
     bool iSForDestroy(vector<string>& levelData);
 

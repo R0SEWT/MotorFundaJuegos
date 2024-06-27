@@ -65,7 +65,7 @@ void Agent::draw()
     spritebatch.init();
     spritebatch.begin();
 
-    glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
+    glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f); // por defecto la textura completa 
     glm::vec4 destRect(position.x, position.y, AGENT_WIDTH, AGENT_WIDTH);
     spritebatch.draw(destRect, uvRect, ResourceManager::getTexture("Images/circle.png").id, 0.0f, color);
     spritebatch.end();

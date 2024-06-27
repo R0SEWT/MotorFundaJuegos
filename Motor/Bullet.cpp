@@ -17,6 +17,18 @@ void Bullet::init(glm::vec2 position, glm::vec2 direction, float speed)
 
 }
 
+void Bullet::draw()
+{
+	spritebatch.init();
+	spritebatch.begin();
+
+	glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f); // por defecto la textura completa 
+	glm::vec4 destRect(position.x, position.y, AGENT_WIDTH/2, AGENT_WIDTH/2);
+	spritebatch.draw(destRect, uvRect, ResourceManager::getTexture("Images/circle.png").id, 0.0f, color);
+	spritebatch.end();
+	spritebatch.renderBatch();
+}
+
 void Bullet::update()
 {
 	position += direction * speed;
