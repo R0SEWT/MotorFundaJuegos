@@ -369,6 +369,7 @@ void MainGame::DecreaseLives()
 }
 
 
+
 void MainGame::update() {
 	while (gameState != GameState::EXIT) {
 		draw();

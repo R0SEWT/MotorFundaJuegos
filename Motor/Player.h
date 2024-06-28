@@ -1,6 +1,7 @@
 #pragma once
 #include "Human.h"
 #include "InputManager.h"
+#include "algorithm"
 
 
 enum direction {
@@ -19,6 +20,8 @@ private:
     int currentShotColdown;
     int timeForShot;
     int direction;
+    bool godMode;
+    pair <int, int> aux_speed_coldown;
 public:
     Player();
     ~Player();
@@ -32,6 +35,6 @@ public:
 
     void updateShotColdown(float camScale);
     void infoCD();
-
+    void GodMode();
 };
 
