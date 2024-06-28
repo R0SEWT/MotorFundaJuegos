@@ -25,7 +25,7 @@ void Player::init(float speed, glm::vec2 position, InputManager* inputManager, f
 
 	direction = TOP;
 
-	color.set(20, 20, 200, 255);
+	color.set(200, 200, 200, 255);
 }
 
 void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zombie*>& zombies)
@@ -56,10 +56,11 @@ void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 	GodMode();
 	// cambiando el color del player como animacion
 	if (godMode) {
-			int r = (color.r + 100 * sin(0.1 * SDL_GetTicks())); 
-			int g = (color.g + 100 * sin(0.1 * SDL_GetTicks()));
-			int b = (color.b + 100 * sin(0.1 * SDL_GetTicks()));
-			color.set(r, g, b, 255);
+			int r = (color.r + 50 * sin(0.1 * SDL_GetTicks())); 
+			int g = (color.g + 50 * sin(0.1 * SDL_GetTicks()));
+			int b = (color.b + 50 * sin(0.1 * SDL_GetTicks()));
+			int a = (color.a + 60 * sin(0.1 * SDL_GetTicks()));
+			color.set(r, g, b, a);
 	}
 	
 }
@@ -119,7 +120,18 @@ void Player::GodMode()
 		godMode = false;
 		shotColdown = aux_speed_coldown.second;
 		speed = aux_speed_coldown.first;
-		color.set(20, 20, 200, 255);
+		color.set(200, 200, 200, 255);
 	}
 }
 
+void Player::draw()
+{
+	spritebatch.init();
+	spritebatch.begin();
+
+	glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f); // por defecto la textura completa 
+	glm::vec4 destRect(position.x, position.y, AGENT_WIDTH, AGENT_WIDTH);
+	spritebatch.draw(destRect, uvRect, ResourceManager::getTexture("Images/spiderman.png").id, 0.0f, color);
+	spritebatch.end();
+	spritebatch.renderBatch();
+}

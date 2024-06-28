@@ -36,5 +36,6 @@ public:
     void updateShotColdown(float camScale);
     void infoCD();
     void GodMode();
+    void draw();
 };
 
