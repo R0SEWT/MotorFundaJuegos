@@ -14,6 +14,7 @@ public:
     void update(vector<string>& levelData,
         vector<Human*>& humans,
         vector<Zombie*>& zombies);
+    void furia();
     Human* getNearestHuman(vector<Human*>& humans);
 
 

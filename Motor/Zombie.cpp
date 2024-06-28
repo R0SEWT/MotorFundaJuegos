@@ -66,8 +66,32 @@ void Zombie::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 		animationSpeed = 0;
 	}
 
+	//Furia
+	furia();
 
 
+}
+
+void Zombie::furia()
+{
+	if (furia_duration <= 0)
+	{
+		if (rand() % 1000 < 2) // 0.2% de enfurecerse por frame (cuando no tengan furia)
+		{
+			furia_duration = 550;
+			//morado
+			color.set(255, 0, 255, 255);
+		}
+	}
+	else {
+		position += direction * speed * 3.0f;
+		furia_duration--;
+		if (furia_duration == 0)
+		{
+			// color original
+			color.set(255, 255, 255, 255);
+		}
+	}
 }
 
 Human* Zombie::getNearestHuman(vector<Human*>& humans)
