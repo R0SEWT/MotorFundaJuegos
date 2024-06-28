@@ -21,11 +21,12 @@ void Spawner::update()
 	}
 }
 
-void Spawner::init(int timeGeneration, glm::vec2 position)
+void Spawner::init(int timeGeneration, glm::vec2 position, int life)
 {
 	this->position = position;
-	color.set(0, 0, 0, 255);
-	
+	// gris oscuro
+	color.set(0, 0, 0, 160);
+	this->life = life;
 	this->timeGeneration = timeGeneration;
 	this->timeForZombie = timeGeneration;
 	
@@ -39,5 +40,6 @@ void Spawner::checkSpawnZombie(vector<Zombie*>& zombies, float speed)
 		zombies.back()->init(speed, position);
 		spawn = false;
 	}
-	
 }
+
+

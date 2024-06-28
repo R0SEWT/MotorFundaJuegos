@@ -85,6 +85,38 @@ void MainGame::handleInput()
 	if (inputManager.isKeyPressed(SDL_BUTTON_MIDDLE)) {
 		//cout << "CLICK CENTRO" << endl;
 	}
+
+	hackChangeLvl();
+}
+
+void MainGame::hackChangeLvl() {
+	if (inputManager.isKeyDown(SDLK_1)) {
+		currentLevel = 0;
+		currentLevel = --currentLevel;
+		passLevel();
+	}
+	if (inputManager.isKeyDown(SDLK_2)) {
+		currentLevel = 1;
+		currentLevel = --currentLevel % levels.size();
+		passLevel();
+	}
+	if (inputManager.isKeyDown(SDLK_3)) {
+		currentLevel = 2;
+		currentLevel = --currentLevel % levels.size();
+		passLevel();
+	}
+	if (inputManager.isKeyDown(SDLK_4)) {
+		currentLevel = 3;
+		currentLevel = --currentLevel % levels.size();
+		passLevel();
+	}
+	if (inputManager.isKeyDown(SDLK_5)) {
+		currentLevel = 4;
+		currentLevel = --currentLevel % levels.size();
+		passLevel();
+	}
+
+	
 }
 
 void MainGame::createBullet(glm::vec2 direction) {
@@ -165,9 +197,11 @@ void MainGame::initLevel(int currentLevel, bool resetPlayer) {
 
 	// init spawners
 	int time_generation = 150;
+	int life = 10;
+
 	for (auto &pos_s : levels[currentLevel]->getSpawnersPosition()) {
 		spawns.push_back(new Spawner);
-		spawns.back()->init(time_generation, pos_s);
+		spawns.back()->init(time_generation, pos_s, life);
 	}
 }
 
@@ -256,12 +290,41 @@ void MainGame::moveAndCollide() {
 			}
 		}
 	}
+
 	////////////////////////// SPAWNS //////////////////////////
 	// Spawn de zombies con cooldown
 	for (auto& s : spawns) {
 		s->update();
 		s->checkSpawnZombie(zombies, 2.0f);
 	}
+
+	// destroy spawners
+
+	for (size_t i = 0; i < spawns.size(); i++)
+	{
+		for(size_t j = 0; j < bullets.size(); j++)
+		{
+			if(spawns[i]->collideWithAgent(bullets[j])) {
+				spawns[i]->loseLife();
+				delete bullets[j];
+				bullets[j] = bullets.back();
+				bullets.pop_back();
+				break;
+			}
+		}
+	}
+
+	// Eliminacion de spawners
+	for (size_t i = 0; i < spawns.size(); i++)
+	{
+		if (spawns[i]->getLife() <= 0) {
+			delete spawns[i];
+			spawns[i] = spawns.back();
+			spawns.pop_back();
+		}
+	}
+
+
 	///////////////////////// BULLETS //////////////////////////
 	// Asesinatos y eliminacion de balas
 

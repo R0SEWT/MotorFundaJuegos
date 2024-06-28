@@ -54,6 +54,7 @@ private:
 	void moveAndCollide();
 	int getlives();
 	void DecreaseLives();
+	void hackChangeLvl();
 public:
 	MainGame();
 	~MainGame();
