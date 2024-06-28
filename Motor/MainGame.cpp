@@ -139,18 +139,20 @@ void MainGame::initLevel(int currentLevel, bool resetPlayer) {
 	// init humans
 	speed = 3.0f;
 	std::mt19937 ramdomEngie(time(nullptr));
+
 	std::uniform_int_distribution<int>randPosX(
 		1, levels[currentLevel]->getWidth() - 2
 	);
 	std::uniform_int_distribution<int>randPoxY(
 		1, levels[currentLevel]->getHeight() - 2
 	);
+	int raza = rand();
 	for (size_t i = 0; i < levels[currentLevel]->getNumHumans(); i++)
 	{
 		humans.push_back(new Human);
 		glm::vec2 pos(randPosX(ramdomEngie) * TILE_WIDTH,
 			randPoxY(ramdomEngie) * TILE_WIDTH);
-		humans.back()->init(speed, pos);
+		humans.back()->init(speed, pos, (raza++)%1000);
 	}
 	
 	// init zombies

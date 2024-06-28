@@ -11,10 +11,44 @@ Human::~Human()
 {
 }
 
-void Human::init(float speed, glm::vec2 position)
+void Human::init(float speed, glm::vec2 position, int raza)
 {
 	this->speed = speed;
-	color.set(255, 255, 255, 255); 
+	color.set(255, 255, 255, 255); //color blanco
+	// aplicar filtros de color para humanos
+	// el rand da el mismo valor para todos los humanos
+	// para correjir esto se puede usar un seed diferente para cada humano
+	
+	raza %= 6;
+
+	switch (raza)
+	{
+	case 0:
+		//beige
+		color.set(245, 245, 220, 255);
+		break;
+	case 1:
+		// marron claro
+		color.set(205, 133, 63, 255);
+		break;
+	case 2:
+		//marron
+		color.set(139, 69, 19, 255);
+		break;
+	case 3:
+		color.set(255, 255, 0, 255); //color amarillo
+		break;
+	case 4:
+		//marro oscuro
+		color.set(139, 69, 19, 255);
+		break;
+	case 5:
+		// piel claro
+		color.set(255, 218, 185, 255);
+		break;
+	default:
+		break;
+	}
 	this->position = position;
 
 	//Aletorizar primer frame del sprite e inicilizar variables
