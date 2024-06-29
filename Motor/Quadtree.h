@@ -11,118 +11,22 @@ private:
     float bounds[4]; // [x, y, width, height]
     Quadtree* nodes[4];
 
-    void split() {
-        float subWidth = (bounds[2] / 2);
-        float subHeight = (bounds[3] / 2);
-        float x = bounds[0];
-        float y = bounds[1];
-
-        float aux[4][4] = {
-            { x + subWidth, y, subWidth, subHeight },
-			{ x, y, subWidth, subHeight },
-			{ x, y + subHeight, subWidth, subHeight },
-			{ x + subWidth, y + subHeight, subWidth, subHeight }
-		};
-
-        for (int i = 0; i < 4; i++) {
-			nodes[i] = new Quadtree();
-            nodes[i]->init(level + 1, aux[i]);
-		}
-
-    }
-
-    int getIndex(glm::vec2 p) {
-        int index = -1;
-        float verticalMidpoint = bounds[0] + (bounds[2] / 2);
-        float horizontalMidpoint = bounds[1] + (bounds[3] / 2);
-
-        bool topQuadrant = (p.y < horizontalMidpoint && p.y >= bounds[1]);
-        bool bottomQuadrant = (p.y >= horizontalMidpoint);
-
-        if (p.x < verticalMidpoint && p.x >= bounds[0]) {
-            if (topQuadrant) {
-                index = 1; // Nodo superior derecho
-            }
-            else if (bottomQuadrant) {
-                index = 2; // Nodo inferior derecho
-            }
-        }
-        else if (p.x >= verticalMidpoint) {
-            if (topQuadrant) {
-                index = 0; // Nodo superior izquierdo
-            }
-            else if (bottomQuadrant) {
-                index = 3; // Nodo inferior izquierdo
-            }
-        }
-
-        return index;
-    }
+    // o(1)
+    void split();
+    // o(1)
+    int getIndex(glm::vec2 p);
 
 public:
     Quadtree() {
 
     }
+    // o(1)
+    void init(int pLevel, float pBounds[4]);
 
-    void init(int pLevel, float pBounds[4]) {
-        level = pLevel;
-		bounds[0] = pBounds[0];
-		bounds[1] = pBounds[1];
-		bounds[2] = pBounds[2];
-		bounds[3] = pBounds[3];
-		for (int i = 0; i < 4; i++) nodes[i] = nullptr;
-	}
-
-    void clear() {
-        objects.clear();
-
-        for (int i = 0; i < 4; i++) {
-            if (nodes[i] != nullptr) {
-                nodes[i]->clear();
-                delete nodes[i];
-                nodes[i] = nullptr;
-            }
-        }
-    }
-    void insert(glm::vec2 p) {
-        if (nodes[0] != nullptr) {
-            int index = getIndex(p);
-
-            if (index != -1) {
-                nodes[index]->insert(p);
-                return;
-            }
-        }
-
-        objects.push_back(p);
-
-        if (objects.size() > MAX_OBJECTS && level < MAX_LEVELS) {
-            if (nodes[0] == nullptr) {
-                split();
-            }
-
-            int i = 0;
-            while (i < objects.size()) {
-                int index = getIndex(objects[i]);
-                if (index != -1) {
-                    nodes[index]->insert(objects[i]);
-                    objects.erase(objects.begin() + i);
-                }
-                else {
-                    i++;
-                }
-            }
-        }
-    }
-
-    std::vector<glm::vec2> retrieve(std::vector<glm::vec2>& returnObjects, glm::vec2 p) {
-        int index = getIndex(p);
-        if (index != -1 && nodes[0] != nullptr) {
-            nodes[index]->retrieve(returnObjects, p);
-        }
-
-        returnObjects.insert(returnObjects.end(), objects.begin(), objects.end());
-
-        return returnObjects;
-    }
+    // o(n)
+    void clear();
+    // o(log n)
+    void insert(glm::vec2 p);
+    // o(n) y theta(n)
+    std::vector<glm::vec2> retrieve(std::vector<glm::vec2>& returnObjects, glm::vec2 p);
 };

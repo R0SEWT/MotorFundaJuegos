@@ -63,7 +63,7 @@ void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 
 			r = 255;
 			g = 255;
-			a = glm::clamp(a, 120, 255);
+			a = glm::clamp(a, 60, 255);
 
 			int b = 0;
 

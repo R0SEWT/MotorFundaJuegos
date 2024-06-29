@@ -353,18 +353,18 @@ void MainGame::moveAndCollide() {
 	updateQuadtree();
 
 	Agent* agent = new Agent();
-	for(auto &b: bullets) {									// o(n*log(n)) = n * log(n) + o(n)
+	for (auto& b : bullets) { // O(n_b * log(n_z))
 		std::vector<glm::vec2> nearbyObjects;
-		quadtree->retrieve(nearbyObjects, b->getPosition());				// o(n) = log(n)
-		for(auto& n: nearbyObjects) {							// o(log(n)) = log(n) + n
+		quadtree->retrieve(nearbyObjects, b->getPosition()); // O(log(n_z))
+		for (auto& n : nearbyObjects) { // O(log(n_z))
 			glm::vec2 pos(n.x, n.y);
 			agent->setPosition(pos);
-			if (b->collideWithAgent(agent)) {						// o(log(n)) = o(log(n)) + n  
+			if (b->collideWithAgent(agent)) { // O(1)
 				delete b;
 				b = bullets.back();
 				bullets.pop_back();
-				for(auto& z: zombies) {								// o(n) = o(n) + 1
-					if(z->collideWithAgent(agent)) {						 // o(1) = 1
+				for (auto& z : zombies) { // O(n_z)
+					if (z->collideWithAgent(agent)) { // O(1)
 						delete z;
 						z = zombies.back();
 						zombies.pop_back();
@@ -376,26 +376,27 @@ void MainGame::moveAndCollide() {
 		}
 	}
 
+
 	updateQuadtree();
 
 	//infecciones
-
-	for (auto& h : humans) {
+	for (auto& h : humans) { // O(n_h * log(n_h))
 		std::vector<glm::vec2> nearbyObjects;
-		quadtree->retrieve(nearbyObjects, h->getPosition());
-		for (auto& n : nearbyObjects) {
+		quadtree->retrieve(nearbyObjects, h->getPosition()); // O(log(n_h))
+		for (auto& n : nearbyObjects) { // O(log(n_h))
 			glm::vec2 pos(n.x, n.y);
 			agent->setPosition(pos);
-			if (h->collideWithAgent(agent)) {
+			if (h->collideWithAgent(agent)) { // O(1)
 				delete h;
 				h = humans.back();
 				humans.pop_back();
 				zombies.push_back(new Zombie);
-				zombies.back()->init(2.0f, pos);
+				zombies.back()->init(2.0f, pos); // O(1)
 				break;
 			}
 		}
 	}
+
 
 	delete agent;
 }
