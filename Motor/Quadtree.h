@@ -1,9 +1,5 @@
 #include <vector>
-#include <iostream>
-
-struct Point {
-    float x, y;
-};
+#include <glm/glm.hpp>
 
 class Quadtree {
 private:
@@ -11,7 +7,7 @@ private:
     const int MAX_LEVELS = 5;
 
     int level;
-    std::vector<Point> objects;
+    std::vector<glm::vec2> objects;
     float bounds[4]; // [x, y, width, height]
     Quadtree* nodes[4];
 
@@ -35,7 +31,7 @@ private:
 
     }
 
-    int getIndex(Point p) {
+    int getIndex(glm::vec2 p) {
         int index = -1;
         float verticalMidpoint = bounds[0] + (bounds[2] / 2);
         float horizontalMidpoint = bounds[1] + (bounds[3] / 2);
@@ -88,15 +84,7 @@ public:
             }
         }
     }
-    // Insert the object into the quadtree. If the node
-    // exceeds the capacity, it will split and add all
-    // objects to their corresponding nodes.
-
-    // produce stack overflow if the point is outside the bounds
-    // of the quadtree eso sucede porque el punto no se inserta en el nodo
-    // sino en el objeto, por lo que si el punto no esta en el rango del objeto
-    // se produce un stack overflow
-    void insert(Point p) {
+    void insert(glm::vec2 p) {
         if (nodes[0] != nullptr) {
             int index = getIndex(p);
 
@@ -127,7 +115,7 @@ public:
         }
     }
 
-    std::vector<Point> retrieve(std::vector<Point>& returnObjects, Point p) {
+    std::vector<glm::vec2> retrieve(std::vector<glm::vec2>& returnObjects, glm::vec2 p) {
         int index = getIndex(p);
         if (index != -1 && nodes[0] != nullptr) {
             nodes[index]->retrieve(returnObjects, p);

@@ -276,11 +276,9 @@ void MainGame::updateElements() {
 
 void MainGame::updateQuadtree() {
 	quadtree->clear();
-	Point p;
+
 	for (auto& z : zombies) {
-		p.x = z->getPosition().x;
-		p.y = z->getPosition().y;
-		quadtree->insert(p);
+		quadtree->insert(z->getPosition());
 	}
 }
 
@@ -351,15 +349,12 @@ void MainGame::moveAndCollide() {
 		}
 	}
 
-
-
 	updateQuadtree();
 
 	Agent* agent = new Agent();
-	for(auto &b: bullets) {									// o(n) = n * log(n) + n (aprox)
-		Point p = { b->getPosition().x, b->getPosition().y };
-		std::vector<Point> nearbyObjects;
-		quadtree->retrieve(nearbyObjects, p);				// o(n) = log(n)
+	for(auto &b: bullets) {									// o(n*log(n)) = n * log(n) + o(n)
+		std::vector<glm::vec2> nearbyObjects;
+		quadtree->retrieve(nearbyObjects, b->getPosition());				// o(n) = log(n)
 		for(auto& n: nearbyObjects) {							// o(log(n)) = log(n) + n
 			glm::vec2 pos(n.x, n.y);
 			agent->setPosition(pos);
@@ -385,9 +380,8 @@ void MainGame::moveAndCollide() {
 	//infecciones
 
 	for (auto& h : humans) {
-		Point p = { h->getPosition().x, h->getPosition().y };
-		std::vector<Point> nearbyObjects;
-		quadtree->retrieve(nearbyObjects, p);
+		std::vector<glm::vec2> nearbyObjects;
+		quadtree->retrieve(nearbyObjects, h->getPosition());
 		for (auto& n : nearbyObjects) {
 			glm::vec2 pos(n.x, n.y);
 			agent->setPosition(pos);
