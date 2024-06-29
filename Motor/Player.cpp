@@ -1,7 +1,8 @@
 #include "Player.h"
 #include <SDL/SDL.h>
-
+#include <algorithm> 
 #include <iostream>
+
 using namespace std;
 
 Player::Player()
@@ -56,10 +57,16 @@ void Player::update(vector<string>& levelData, vector<Human*>& humans, vector<Zo
 	GodMode();
 	// cambiando el color del player como animacion
 	if (godMode) {
-			int r = (color.r + 50 * sin(0.1 * SDL_GetTicks())); 
-			int g = (color.g + 50 * sin(0.1 * SDL_GetTicks()));
-			int b = (color.b + 50 * sin(0.1 * SDL_GetTicks()));
-			int a = (color.a + 60 * sin(0.1 * SDL_GetTicks()));
+			int r = (color.r + 100 * sin(0.3 * SDL_GetTicks()));  
+			int g = (color.g + 100 * sin(0.3 * SDL_GetTicks())); // 100 es la amplitud de la onda y 0.0003 es la frecuencia
+			int a = (color.a + 10 * sin(0.3 * SDL_GetTicks())); 
+
+			r = 255;
+			g = 255;
+			a = glm::clamp(a, 120, 255);
+
+			int b = 0;
+
 			color.set(r, g, b, a);
 	}
 	
@@ -94,7 +101,7 @@ void Player::updateShotColdown(float camScale)
 	if (camScale > 0) {
 		currentShotColdown = shotColdown / camScale;
 	}
-	cout << currentShotColdown << endl;
+	//cout << currentShotColdown << endl;
 }
 
 bool Player::shotReady() {

@@ -346,6 +346,7 @@ void MainGame::moveAndCollide() {
 			delete bullets[i];
 			bullets[i] = bullets.back();
 			bullets.pop_back();
+			break;
 		}
 	}
 
@@ -449,20 +450,32 @@ void MainGame::reset() {
 	glClearColor(0.529f, 0.808f, 0.922f, 1.0f); // RGB para color celeste claro
 	for (size_t i = 0; i < zombies.size(); i++)
 	{
-		delete zombies[i];
+		if (zombies[i] != nullptr) {
+			delete zombies[i];
+			zombies[i] = nullptr;
+		}
 	}
 	
 	for (size_t i = 0; i < humans.size(); i++)
 	{
-		delete humans[i];
+		if (humans[i] != nullptr) {
+			delete humans[i];
+			humans[i] = nullptr; 
+		}
 	}
 	for (size_t i = 0; i < bullets.size(); i++)
 	{
-		delete bullets[i];
+		if (bullets[i] != nullptr) {
+			delete bullets[i];
+			bullets[i] = nullptr; 
+		}
 	}
 	for (size_t i = 0; i < spawns.size(); i++)
 	{
-		delete spawns[i];
+		if (spawns[i] != nullptr) {
+			delete spawns[i];
+			spawns[i] = nullptr;
+		}
 	}
 
 	delete player;

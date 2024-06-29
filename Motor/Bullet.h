@@ -5,7 +5,6 @@ class Bullet :
 {
 private:
     glm::vec2 direction;
-    bool destroy;
 
 public:
     Bullet();
