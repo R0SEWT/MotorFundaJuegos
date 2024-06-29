@@ -13,6 +13,7 @@
 #include "SpriteBatch.h"
 #include "Spawner.h"
 #include "Bullet.h"
+#include "Quadtree.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -41,6 +42,7 @@ private:
 	Sprite sprite;
 	Camera2D camera2D;
 	InputManager inputManager;
+	Quadtree* quadtree;
 
 	void init();
 	void initLevel(int currentLevel, bool resetPlayer = false);
@@ -55,6 +57,7 @@ private:
 	int getlives();
 	void DecreaseLives();
 	void hackChangeLvl();
+	void updateQuadtree();
 public:
 	MainGame();
 	~MainGame();

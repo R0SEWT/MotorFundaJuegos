@@ -37,6 +37,8 @@ public:
 
 	//declarar funcion draw como virtual (cambia en cada hijo)
 	virtual void draw();
+
+	void setPosition(glm::vec2 newPos) { position = newPos; }
 	
 	bool collideWithLevel(const vector<string>levelData);
 	virtual ~Agent();

@@ -151,6 +151,7 @@
     <ClCompile Include="MenuScreen.cpp" />
     <ClCompile Include="picoPNG.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Quadtree.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="ScreenList.cpp" />
     <ClCompile Include="Spawner.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="MenuScreen.h" />
     <ClInclude Include="picoPNG.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="ScreenIndices.h" />

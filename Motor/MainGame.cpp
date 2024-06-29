@@ -121,7 +121,7 @@ void MainGame::hackChangeLvl() {
 
 void MainGame::createBullet(glm::vec2 direction) {
 	if(!player->shotReady()) return;
-	player->infoCD();
+	//player->infoCD();
 	// A mas amplitud de camara, mayor el coldown
 	player->updateShotColdown(camera2D.getScale());
 	player->resetCDShot();
@@ -203,6 +203,18 @@ void MainGame::initLevel(int currentLevel, bool resetPlayer) {
 		spawns.push_back(new Spawner);
 		spawns.back()->init(time_generation, pos_s, life);
 	}
+	float bounds[4] = {
+		0.0f,
+		0.0f,
+		levels[currentLevel]->getWidth() * TILE_WIDTH,
+		levels[currentLevel]->getHeight() * TILE_WIDTH
+	};
+	quadtree = new Quadtree();
+	quadtree->init(0, bounds);
+
+	updateQuadtree();
+
+	
 }
 
 void MainGame::draw() {
@@ -262,7 +274,18 @@ void MainGame::updateElements() {
 	camera2D.setPosition(player->getPosition());
 }
 
+void MainGame::updateQuadtree() {
+	quadtree->clear();
+	Point p;
+	for (auto& z : zombies) {
+		p.x = z->getPosition().x;
+		p.y = z->getPosition().y;
+		quadtree->insert(p);
+	}
+}
+
 void MainGame::moveAndCollide() {
+
 	///////////////////////// PLAYER //////////////////////////
 	player->update(levels[currentLevel]->getLevelData(), humans, zombies);
 
@@ -273,23 +296,6 @@ void MainGame::moveAndCollide() {
 		h->update(levels[currentLevel]->getLevelData(), humans, zombies);
 	}
 
-	///////////////////////// ZOMBIES //////////////////////////
-	//Movimiento e infecciones
-	for (size_t i = 0; i < zombies.size(); i++)
-	{
-		zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
-		for (size_t j = 0; j < humans.size(); j++)
-		{
-			if (zombies[i]->collideWithAgent(humans[j])) {
-				zombies.push_back(new Zombie);
-				zombies.back()->init(2.0f, humans[j]->getPosition());
-				delete humans[j];
-				humans[j] = humans.back();
-				humans.pop_back();
-
-			}
-		}
-	}
 
 	////////////////////////// SPAWNS //////////////////////////
 	// Spawn de zombies con cooldown
@@ -325,37 +331,78 @@ void MainGame::moveAndCollide() {
 	}
 
 
+	///////////////////////// ZOMBIES //////////////////////////
+	for(auto &z: zombies) {
+		z->update(levels[currentLevel]->getLevelData(), humans, zombies);
+	}
+	
 	///////////////////////// BULLETS //////////////////////////
 	// Asesinatos y eliminacion de balas
 
 	for (auto& b : bullets) {
 		b->update();
 	}
-	for (size_t i = 0; i < zombies.size(); i++) // mejorable con Spatial Partitioning
+	for (size_t i = 0; i < bullets.size(); i++)
 	{
-		for (size_t j = 0; j < bullets.size(); j++)
-		{
-			// asesinato y eliminacion de bala
-			if (zombies[i]->collideWithAgent(bullets[j])) {
+		if (bullets[i]->collideWithLevel(levels[currentLevel]->getLevelData())) {
+			delete bullets[i];
+			bullets[i] = bullets.back();
+			bullets.pop_back();
+		}
+	}
 
-				delete zombies[i];
 
-				zombies[i] = zombies.back();
-				zombies.pop_back();
-				delete bullets[j];
-				bullets[j] = bullets.back();
+
+	updateQuadtree();
+
+	Agent* agent = new Agent();
+	for(auto &b: bullets) {									// o(n) = n * log(n) + n (aprox)
+		Point p = { b->getPosition().x, b->getPosition().y };
+		std::vector<Point> nearbyObjects;
+		quadtree->retrieve(nearbyObjects, p);				// o(n) = log(n)
+		for(auto& n: nearbyObjects) {							// o(log(n)) = log(n) + n
+			glm::vec2 pos(n.x, n.y);
+			agent->setPosition(pos);
+			if (b->collideWithAgent(agent)) {						// o(log(n)) = o(log(n)) + n  
+				delete b;
+				b = bullets.back();
 				bullets.pop_back();
-				break;
-			}
-			// eliminacion de bala al chocar con pared
-			if (bullets[j]->iSForDestroy(levels[currentLevel]->getLevelData())) {
-				delete bullets[j];
-				bullets[j] = bullets.back();
-				bullets.pop_back();
+				for(auto& z: zombies) {								// o(n) = o(n) + 1
+					if(z->collideWithAgent(agent)) {						 // o(1) = 1
+						delete z;
+						z = zombies.back();
+						zombies.pop_back();
+						break;
+					}
+				}
 				break;
 			}
 		}
 	}
+
+	updateQuadtree();
+
+	//infecciones
+
+	for (auto& h : humans) {
+		Point p = { h->getPosition().x, h->getPosition().y };
+		std::vector<Point> nearbyObjects;
+		quadtree->retrieve(nearbyObjects, p);
+		for (auto& n : nearbyObjects) {
+			glm::vec2 pos(n.x, n.y);
+			agent->setPosition(pos);
+			if (h->collideWithAgent(agent)) {
+				delete h;
+				h = humans.back();
+				humans.pop_back();
+				zombies.push_back(new Zombie);
+				zombies.back()->init(2.0f, pos);
+				break;
+			}
+		}
+	}
+
+	delete agent;
 }
 
 int MainGame::getlives()
@@ -425,6 +472,7 @@ void MainGame::reset() {
 	}
 
 	delete player;
+	delete quadtree;
 	zombies.clear();
 	humans.clear();
 	levels.clear();
