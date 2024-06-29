@@ -64,7 +64,7 @@ void MainGame::handleInput()
 		}
 	}
 
-	if (inputManager.isKeyDown(SDLK_e)) {
+	else if (inputManager.isKeyDown(SDLK_e)) {
 		if (camera2D.getScale() > 0.6f) {
 			camera2D.setScale(camera2D.getScale() - SCALE_SPEED);
 		}
@@ -95,22 +95,22 @@ void MainGame::hackChangeLvl() {
 		currentLevel = --currentLevel;
 		passLevel();
 	}
-	if (inputManager.isKeyDown(SDLK_2)) {
+	else if (inputManager.isKeyDown(SDLK_2)) {
 		currentLevel = 1;
 		currentLevel = --currentLevel % levels.size();
 		passLevel();
 	}
-	if (inputManager.isKeyDown(SDLK_3)) {
+	else if (inputManager.isKeyDown(SDLK_3)) {
 		currentLevel = 2;
 		currentLevel = --currentLevel % levels.size();
 		passLevel();
 	}
-	if (inputManager.isKeyDown(SDLK_4)) {
+	else if (inputManager.isKeyDown(SDLK_4)) {
 		currentLevel = 3;
 		currentLevel = --currentLevel % levels.size();
 		passLevel();
 	}
-	if (inputManager.isKeyDown(SDLK_5)) {
+	else if (inputManager.isKeyDown(SDLK_5)) {
 		currentLevel = 4;
 		currentLevel = --currentLevel % levels.size();
 		passLevel();
@@ -289,9 +289,16 @@ void MainGame::moveAndCollide() {
 
 	///////////////////////// HUMANS //////////////////////////
 	// Movimiento y colisiones
+	updateQuadtree();
+
 	for (auto& h : humans)
 	{
-		h->update(levels[currentLevel]->getLevelData(), humans, zombies);
+		vector<glm::vec2> nearbyObjects;
+		quadtree->retrieve(nearbyObjects, h->getPosition()); // O(log(n_h))
+		
+		h->update(levels[currentLevel]->getLevelData(), humans, nearbyObjects);
+		
+		
 	}
 
 

@@ -61,7 +61,9 @@ void Human::init(float speed, glm::vec2 position, int raza)
 	// obtner direccion
 	std::mt19937 randomEngine(time(nullptr));
 	std::uniform_real_distribution<float>randDir(-1.0f, 1.0f);
-	direction = glm::vec2(randDir(randomEngine), randDir(randomEngine));
+	direction = glm::vec2(randDir(randomEngine), randDir(randomEngine))
+	
+		;
 	if (direction.length() == 0) {
 		direction = glm::vec2(1.0f, 1.0f);
 	}
@@ -69,14 +71,19 @@ void Human::init(float speed, glm::vec2 position, int raza)
 
 }
 
-void Human::update(vector<string>& levelData, vector<Human*>& humans, vector<Zombie*>& zombies)
+void Human::update(vector<string>& levelData, vector<Human*>& humans, vector<glm::vec2>& zombies)
 {
 	std::mt19937 randomEngie(time(nullptr));
 	std::uniform_real_distribution<float>randRotate(-40.0f, 40.0f);
-	position += direction * speed;
+	
+
+	scapeToZombie(zombies); //direccion lejos de los zombies
 	if (collideWithLevel(levelData)) {
 		direction = glm::rotate(direction, randRotate(randomEngie));
 	}
+	//mover humano
+	position += direction * speed;
+
 	//Condicional si el movimiento es negativo(a la izquierda) cambiar direccion vertical del frame
 	if (direction.x * speed < 0) {
 		valDirection = -1;
@@ -93,8 +100,33 @@ void Human::update(vector<string>& levelData, vector<Human*>& humans, vector<Zom
 		currentFrame = (currentFrame + 1) % 4;
 		animationSpeed = 0;
 	}
+	
 
 }
+
+
+
+void Human::scapeToZombie(vector<glm::vec2>& zombies)
+{
+	//buscar el zombie mas cercano
+	glm::vec2 direction;
+	glm::vec2 closeZombie;
+	float minDistance = 9999999.0f;
+	for (int i = 0; i < zombies.size(); i++) {
+		glm::vec2 distVec = zombies[i] - position;
+		float distance = glm::length(distVec);
+		if (distance < minDistance) {
+			minDistance = distance;
+			closeZombie = zombies[i];
+		}
+	}
+	//si hay un zombie cerca, huir
+	direction = glm::normalize(position - closeZombie); //direccion lejos del zombie
+	//position += direction * speed;
+	//mover humano
+	this->direction = direction;
+}
+
 
 void Human::draw()
 {
