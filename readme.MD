@@ -1,6 +1,6 @@
 # Zoombies
 
-Zoombies es un juego 2D de estilo cuya mecanica principal es disparar mas rapido mientras mas zoom tengas.
+Zoombies es un juego 2D cuya mecanica principal es disparar mas rapido mientras mas zoom tengas.
 Deberas balancear que tanto ves en tu pantalla con que tan rapido disparas mientras matas zombies y destruyes generadores.
 
 ## Cambios al motor
