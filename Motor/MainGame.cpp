@@ -92,7 +92,7 @@ void MainGame::handleInput()
 			delete calacas[calacas.size() - 1];
 			calacas.pop_back();
 		}
-		coldown_delete = 30;
+		coldown_delete = 20;
 	}
 	else if (inputManager.isKeyDown(SDLK_f) && (coldown_delete <= 0)) { // eliminar 2 calacas
 		if (calacas.size() > 1) {
@@ -105,7 +105,7 @@ void MainGame::handleInput()
 			delete calacas[calacas.size() - 1];
 			calacas.pop_back();
 		}
-		coldown_delete = 30;
+		coldown_delete = 20;
 	}
 	else {
 		if (coldown_delete > 0) {
