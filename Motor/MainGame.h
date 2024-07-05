@@ -11,6 +11,7 @@
 #include "Human.h"
 #include "Zombie.h"
 #include "SpriteBatch.h"
+#include "Calaca.h"
 
 enum class GameState {
 	PLAY, EXIT
@@ -24,9 +25,9 @@ private:
 	SpriteBatch spriteBatch;
 	SpriteBatch hudBatch;
 	vector<Level*> levels;
-	vector<Human*> humans;
-	vector<Zombie*> zombies;
-	Player* player;
+	vector<Calaca*> calacas;
+
+	int timeForNextCalaca;
 	double alphaReduce;
 	double alphaReduceTotal;
 	int currentLevel;
@@ -42,6 +43,9 @@ private:
 	void handleInput();
 	void updateElements();
 	void createBullet();
+
+	void createRandomCalaca();
+
 public:
 	MainGame();
 	~MainGame();

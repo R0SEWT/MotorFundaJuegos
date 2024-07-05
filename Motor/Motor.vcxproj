@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Calaca.cpp" />
     <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="Agent.h" />
     <ClInclude Include="App.h" />
+    <ClInclude Include="Calaca.h" />
     <ClInclude Include="Camera2D.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="Game.h" />

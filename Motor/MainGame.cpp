@@ -52,16 +52,38 @@ void MainGame::processInput() {
 void MainGame::handleInput()
 {
 	const float SCALE_SPEED = 0.1f;
-	if (inputManager.isKeyPressed(SDLK_q)) {
+	const float CAMERA_SPEED = 4.0f;
+
+	if (inputManager.isKeyDown(SDLK_q)) {
 		camera2D.setScale(camera2D.getScale() + SCALE_SPEED);
 	}
 
-	if (inputManager.isKeyPressed(SDLK_e)) {
+	if (inputManager.isKeyDown(SDLK_e)) {
 		camera2D.setScale(camera2D.getScale() - SCALE_SPEED);
 	}
+
+	//camera2D.setPosition();
+
+	if (inputManager.isKeyDown(SDLK_a)) {
+		camera2D.setPosition(camera2D.getPosition() + glm::vec2(-CAMERA_SPEED, 0.0f));
+	}
+
+	if (inputManager.isKeyDown(SDLK_d)) {
+		camera2D.setPosition(camera2D.getPosition() + glm::vec2(CAMERA_SPEED, 0.0f));
+	}
+
+	if (inputManager.isKeyDown(SDLK_w)) {
+		camera2D.setPosition(camera2D.getPosition() + glm::vec2(0.0f, CAMERA_SPEED));
+	}
+
+	if (inputManager.isKeyDown(SDLK_s)) {
+		camera2D.setPosition(camera2D.getPosition() + glm::vec2(0.0f, -CAMERA_SPEED));
+	}
+
+
 	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
 		//cout << "CLICK IZQUIERDO" << endl;
-		createBullet();
+
 	}
 
 	if (inputManager.isKeyPressed(SDL_BUTTON_RIGHT)) {
@@ -102,9 +124,6 @@ void MainGame::initLevel() {
 	levels.push_back(new Level("Level/level1.txt"));
 	currentLevel = 0;
 	spriteBatch.init();
-	player = new Player();
-	player->init(10.0f, levels[currentLevel]->getPlayerPosition(),
-		&inputManager);
 	std::mt19937 ramdomEngie(time(nullptr));
 
 	std::uniform_int_distribution<int>randPosX(
@@ -113,20 +132,8 @@ void MainGame::initLevel() {
 	std::uniform_int_distribution<int>randPoxY(
 		1, levels[currentLevel]->getHeight() - 2
 	);
-	for (size_t i = 0; i < levels[currentLevel]->getNumHumans(); i++)
-	{
-		humans.push_back(new Human);
-		glm::vec2 pos(randPosX(ramdomEngie) * TILE_WIDTH,
-			randPoxY(ramdomEngie) * TILE_WIDTH);
-		humans.back()->init(3.0f, pos);
-	}
-	for (auto pos_z : levels[currentLevel]->getZombiesPosition())
-	{
-		zombies.push_back(new Zombie);
-		glm::vec2 pos();
-		zombies.back()->init(2.0f, pos_z);
-	}
 
+	timeForNextCalaca = 100; // 500 frames
 }
 
 void MainGame::draw() {
@@ -143,14 +150,9 @@ void MainGame::draw() {
 	spriteBatch.begin();
 
 	levels[currentLevel]->draw();
-	player->draw(spriteBatch);
-	for (size_t i = 0; i < humans.size(); i++)
-	{
-		humans[i]->draw(spriteBatch);
-	}
-	for (auto z : zombies)
-	{
-		z->draw(spriteBatch);
+
+	for (size_t i = 0; i < calacas.size(); i++) {
+		calacas[i]->draw(spriteBatch);
 	}
 
 	spriteBatch.end();
@@ -176,7 +178,6 @@ void MainGame::run() {
 void MainGame::updateElements() {
 	
 	camera2D.update();
-	camera2D.setPosition(player->getPosition());
 }
 
 void MainGame::update() {
@@ -184,25 +185,21 @@ void MainGame::update() {
 		draw();
 		processInput();
 		updateElements();
-		player->update(levels[currentLevel]->getLevelData(), humans, zombies);
-		for (auto &h : humans)
-		{
-			h->update(levels[currentLevel]->getLevelData(), humans, zombies);
-		}
-		for (size_t i = 0; i < zombies.size(); i++)
-		{
-			zombies[i]->update(levels[currentLevel]->getLevelData(), humans, zombies);
-			for (size_t j = 0; j < humans.size(); j++)
-			{
-				if (zombies[i]->collideWithAgent(humans[j])) {
-					zombies.push_back(new Zombie);
-					zombies.back()->init(2.0f, humans[j]->getPosition());
-					delete humans[j];
-					humans[j] = humans.back();
-					humans.pop_back();
 
-				}
-			}
+		if (timeForNextCalaca > 0) {
+			timeForNextCalaca--;
+		}
+		else {
+			timeForNextCalaca = 100;
+
+			calacas.push_back(new Calaca());
+			glm::vec2 pos = levels[currentLevel]->getPlayerPosition();
+			calacas.back()->init(2.0f, pos);
+			calacas.back()->setRandomSprite();
+		}
+
+		for (size_t i = 0; i < calacas.size(); i++) {
+			calacas[i]->update(levels[currentLevel]->getLevelData());
 		}
 	}
 
@@ -210,17 +207,7 @@ void MainGame::update() {
 
 void MainGame::reset() {
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
-	for (size_t i = 0; i < zombies.size(); i++)
-	{
-		delete zombies[i];
-	}
-	zombies.clear();
-	for (size_t i = 0; i < humans.size(); i++)
-	{
-		delete humans[i];
-	}
-	humans.clear();
-	delete player;
+
 	levels.clear();
 	currentLevel = 0;
 }

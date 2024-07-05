@@ -10,6 +10,7 @@ const float AGENT_RADIUS = AGENT_WIDTH / 2.0f;
 
 class Zombie;
 class Human;
+class Calaca;
 
 class Agent // agentes del juego
 {
@@ -17,6 +18,7 @@ protected:
 	glm::vec2 position;
 	float speed;
 	Color color;
+	string texturePath;
 	void checkTilePosition(const vector<string>& levelData,
 		vector<glm::vec2>& collideTilePosition, float x, float y);
 	void collideWithTile(glm::vec2 tilePos);
