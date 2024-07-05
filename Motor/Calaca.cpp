@@ -26,6 +26,9 @@ void Calaca::init(float speed, glm::vec2 position)
 	if (direction.length() == 0) {
 		direction = glm::vec2(1.0f, 1.0f);
 	}
+	direction = glm::normalize(direction);
+
+	color.set(255, 255, 255, 255);
 
 }
 
@@ -48,6 +51,7 @@ void Calaca::draw()
 	glm::vec4 destRect(position.x, position.y, AGENT_WIDTH * 0.9, AGENT_WIDTH * 0.8);
 	spritebatch.draw(destRect, uvRect, ResourceManager::getTexture(texturePath).id, 0.0f, color);
 	spritebatch.end();
+	spritebatch.renderBatch();
 }
 
 
