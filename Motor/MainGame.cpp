@@ -4,6 +4,10 @@
 #include <random>
 #include <ctime>
 
+
+const int max_calacas = 20;
+int coldown_delete = 30;
+
 using namespace std;
 
 MainGame::MainGame() {
@@ -11,6 +15,7 @@ MainGame::MainGame() {
 	height = 600;
 	gameState = GameState::PLAY;
 	camera2D.init(width, height);
+	srand(time(nullptr));
 }
 
 MainGame::~MainGame() {
@@ -54,11 +59,11 @@ void MainGame::handleInput()
 	const float SCALE_SPEED = 0.1f;
 	const float CAMERA_SPEED = 4.0f;
 
-	if (inputManager.isKeyDown(SDLK_q)) {
+	if (inputManager.isKeyDown(SDLK_UP)) {
 		camera2D.setScale(camera2D.getScale() + SCALE_SPEED);
 	}
 
-	if (inputManager.isKeyDown(SDLK_e)) {
+	if (inputManager.isKeyDown(SDLK_DOWN)) {
 		camera2D.setScale(camera2D.getScale() - SCALE_SPEED);
 	}
 
@@ -80,24 +85,37 @@ void MainGame::handleInput()
 		camera2D.setPosition(camera2D.getPosition() + glm::vec2(0.0f, -CAMERA_SPEED));
 	}
 
+	// eliminar calacas
 
-	if (inputManager.isKeyPressed(SDL_BUTTON_LEFT)) {
-		//cout << "CLICK IZQUIERDO" << endl;
-
+	if (inputManager.isKeyDown(SDLK_e) && (coldown_delete <= 0 )) { // eliminar 1 calaca
+		if (calacas.size() > 0) {
+			delete calacas[calacas.size() - 1];
+			calacas.pop_back();
+		}
+		coldown_delete = 30;
+	}
+	else if (inputManager.isKeyDown(SDLK_f) && (coldown_delete <= 0)) { // eliminar 2 calacas
+		if (calacas.size() > 1) {
+			delete calacas[calacas.size() - 1];
+			calacas.pop_back();
+			delete calacas[calacas.size() - 1];
+			calacas.pop_back();
+		}
+		else if (calacas.size() > 0) {
+			delete calacas[calacas.size() - 1];
+			calacas.pop_back();
+		}
+		coldown_delete = 30;
+	}
+	else {
+		if (coldown_delete > 0) {
+			coldown_delete--;
+		}
 	}
 
-	if (inputManager.isKeyPressed(SDL_BUTTON_RIGHT)) {
-		//cout << "CLICK DERECHo" << endl;
-	}
-
-	if (inputManager.isKeyPressed(SDL_BUTTON_MIDDLE)) {
-		//cout << "CLICK CENTRO" << endl;
-	}
 }
 
-void MainGame::createBullet() {
-	
-}
+
 
 void MainGame::initShaders()
 {
@@ -152,7 +170,7 @@ void MainGame::draw() {
 	levels[currentLevel]->draw();
 
 	for (size_t i = 0; i < calacas.size(); i++) {
-		calacas[i]->draw(spriteBatch);
+		calacas[i]->draw();
 	}
 
 	spriteBatch.end();
@@ -189,13 +207,18 @@ void MainGame::update() {
 		if (timeForNextCalaca > 0) {
 			timeForNextCalaca--;
 		}
+		else if (calacas.size() >= max_calacas) {
+			timeForNextCalaca = 100;
+		}
 		else {
 			timeForNextCalaca = 100;
-
+			
+			int randTexture = rand() % 10 + 1;
 			calacas.push_back(new Calaca());
 			glm::vec2 pos = levels[currentLevel]->getPlayerPosition();
 			calacas.back()->init(2.0f, pos);
-			calacas.back()->setRandomSprite();
+			cout << randTexture << endl;
+			calacas.back()->setRandomSprite(randTexture);
 		}
 
 		for (size_t i = 0; i < calacas.size(); i++) {

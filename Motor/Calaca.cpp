@@ -1,6 +1,8 @@
 #include "Calaca.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <random>
+#include <iostream>
+
 
 Calaca::Calaca()
 {
@@ -37,12 +39,23 @@ void Calaca::update(vector<string>& levelData)
 	}
 }
 
-void Calaca::setRandomSprite()
+void Calaca::draw()
+{
+	spritebatch.init();
+	spritebatch.begin();
+	
+	glm::vec4 uvRect(0.0f, 0.0f, 1.0f, 1.0f);
+	glm::vec4 destRect(position.x, position.y, AGENT_WIDTH * 0.9, AGENT_WIDTH * 0.8);
+	spritebatch.draw(destRect, uvRect, ResourceManager::getTexture(texturePath).id, 0.0f, color);
+	spritebatch.end();
+}
+
+
+void Calaca::setRandomSprite(int randTexture)
 {
 	//std::uniform_int_distribution<int>randTexture(1, 10); // 10 texturas
-	srand(time(nullptr));
-	int randTexture = rand() % 10 + 1;
-
+	
+	
 	this->texturePath = "Images/calaca" + to_string(randTexture) + ".png";
 
 }

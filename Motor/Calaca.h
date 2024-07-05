@@ -14,7 +14,8 @@ public:
     ~Calaca();
     void init(float speed, glm::vec2 position);
     void update(vector<string>& levelData);
-    void setRandomSprite();
+    virtual void draw() override;
+    void setRandomSprite(int randTexture);
 
 };
 

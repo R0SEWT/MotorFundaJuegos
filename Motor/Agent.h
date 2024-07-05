@@ -18,7 +18,9 @@ protected:
 	glm::vec2 position;
 	float speed;
 	Color color;
+	SpriteBatch spritebatch;
 	string texturePath;
+
 	void checkTilePosition(const vector<string>& levelData,
 		vector<glm::vec2>& collideTilePosition, float x, float y);
 	void collideWithTile(glm::vec2 tilePos);
@@ -28,7 +30,7 @@ public:
 	virtual void update(vector<string>& levelData,
 		vector<Human*>& humans,
 		vector<Zombie*>& zombies);
-	void draw(SpriteBatch& spritebatch);
+	virtual void draw();
 	bool collideWithLevel(const vector<string>levelData);
 	virtual ~Agent();
 	bool collideWithAgent(Agent* agent);
